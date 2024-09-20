@@ -38,8 +38,8 @@ builder.Host.UseWolverine(opts =>
 
 
         //options.DisableNpgsqlLogging = true;
-        options.Projections.LiveStreamAggregation<Order>();
-        options.Projections.LiveStreamAggregation<Market>();
+        //options.Projections.LiveStreamAggregation<Order>();
+        //options.Projections.LiveStreamAggregation<Market>();
 
         options.Projections.Add<AllMarketOrdersProjection>(ProjectionLifecycle.Async);
         options.Projections.Add<AllMarketsProjection>(ProjectionLifecycle.Async);
@@ -69,5 +69,16 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+if (app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var store = scope.ServiceProvider.GetRequiredService<IDocumentStore>();
+        using var daemon = await store.BuildProjectionDaemonAsync();
+        await daemon.RebuildProjectionAsync
+            <AllMarketsProjection>(CancellationToken.None);
+    }
+}
 
 app.Run();

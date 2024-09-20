@@ -3,24 +3,27 @@ using Marten;
 using Marten.AspNetCore;
 using Marten.Events.Aggregation;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata;
+using System.Runtime.InteropServices;
 using Wolverine.Http;
 using Wolverine.Marten;
 using static Microsoft.AspNetCore.Http.TypedResults;
+using static Simple.BettingExchange.Api.Modules.Markets.MarketHandlers;
 
 namespace Simple.BettingExchange.Api.Modules.Markets;
 
 
 public record MarketLine(string Name);
 public sealed record CreateMarket(string Name, MarketLine[] Lines);
-public sealed record OpenMarket(Guid MarketId);
-public sealed record SuspendMarket(Guid MarketId);
+public sealed record OpenMarket(Guid MarketId, DateTimeOffset OpenedAt);
+public sealed record SuspendMarket(Guid MarketId, string Reason, DateTimeOffset SuspendedAt);
 public sealed record ResumeMarket(Guid MarketId);
 public sealed record CloseMarket(Guid MarketId);
 
-public record MarketInitiated(Guid Id, string Name, MarketSelection[] Lines);
+public record MarketInitiated(Guid Id, string Name, MarketSelection[] Selections);
 public record MarketOpened(Guid Id, DateTimeOffset Date);
 public record MarketClosed(Guid Id, DateTimeOffset Date);
-public record MarketSuspended(Guid Id, DateTimeOffset Date);
+public record MarketSuspended(Guid Id, string Reason, DateTimeOffset Date);
 public record MarketResumed(Guid Id, DateTimeOffset Date);
 
 public enum MarketStatus
@@ -35,9 +38,8 @@ public record MarketSelection(Guid Id, string Name, decimal OddsBack = 5, decima
 
 public record Market(Guid Id, string Name, MarketSelection[] Lines, MarketStatus Status)
 {
-
     public static Market Create(MarketInitiated initiated)
-        => new Market(initiated.Id, initiated.Name, initiated.Lines, MarketStatus.Initiated);
+        => new Market(initiated.Id, initiated.Name, initiated.Selections, MarketStatus.Initiated);
 
     public Market Apply(MarketOpened opened)
     => this with
@@ -69,8 +71,10 @@ public sealed record ShortMarketSelection(Guid Id, string Name, decimal OddsBack
 
 public sealed class AllMarketsProjection : SingleStreamProjection<ShortMarket>
 {
-    public static ShortMarket Create(MarketInitiated initiated) 
-        => new(initiated.Id, initiated.Name, initiated.Lines.Select(l => new ShortMarketSelection(l.Id, l.Name, l.OddsBack, l.OddsLay)).ToArray(), "Initié");
+    public static ShortMarket Create(MarketInitiated initiated)
+    {
+        return new(initiated.Id, initiated.Name, initiated.Selections.Select(l => new ShortMarketSelection(l.Id, l.Name, l.OddsBack, l.OddsLay)).ToArray(), "Initié");
+    }
 
     public ShortMarket Apply(MarketOpened opened, ShortMarket market)
         => market with
@@ -118,12 +122,11 @@ public static class MarketEndPointHandler
     [WolverinePost("/api/markets")]
     public static (CreationResponse, IStartStream) OpenMarket(CreateMarket command)
     {
-        var marketId = CombGuidIdGeneration.NewGuid();
-        var @event = new MarketInitiated(marketId, command.Name, command.Lines.Select(l => new MarketSelection(Guid.NewGuid(), l.Name)).ToArray());
+        var @event = Handle(command);
 
         return (
-            new CreationResponse($"api/markets/{marketId}"),
-            new StartStream<Market>(marketId, @event)
+            new CreationResponse($"api/markets/{@event.Id}"),
+            new StartStream<Market>(@event.Id, @event)
        );
     }
 
@@ -131,7 +134,7 @@ public static class MarketEndPointHandler
     [WolverinePost("/api/markets/{id}/open")]
     public static (IResult, Events) OpenMarket(OpenMarket command, Market market)
     {
-        var @event = new MarketOpened(market.Id, DateTimeOffset.Now);
+        var @event = Handle(command, market);
 
         return (Ok(), [@event]);
     }
@@ -140,7 +143,7 @@ public static class MarketEndPointHandler
     [WolverinePost("/api/markets/{id}/suspend")]
     public static (IResult, Events) Suspend(SuspendMarket command, Market market)
     {
-        var @event = new MarketSuspended(market.Id, DateTimeOffset.Now);
+        var @event = Handle(command, market);
 
         return (Ok(), [@event]);
     }
@@ -161,5 +164,43 @@ public static class MarketEndPointHandler
         var @event = new MarketClosed(market.Id, DateTimeOffset.Now);
 
         return (Ok(), [@event]);
+    }
+}
+
+public static class MarketHandlers
+{
+    public static MarketInitiated Handle(CreateMarket command)
+    {
+        if (!command.Lines.Any())
+        {
+            throw new Exception("MARKET_CREATION_EMPTY_SELECTIONS");
+        }
+
+        return new MarketInitiated(Guid.NewGuid(), command.Name, command.Lines.Select(l => new MarketSelection(Guid.NewGuid(), l.Name)).ToArray());
+    }
+
+    public static MarketOpened Handle(OpenMarket command, Market market)
+    {
+        if (market.Status == MarketStatus.Opened)
+        {
+            throw new Exception("MARKET_CANNOT_BE_REOPEN");
+        }
+
+        return new MarketOpened(market.Id, command.OpenedAt);
+    }
+
+    public static MarketSuspended Handle(SuspendMarket command, Market market)
+    {
+        if (market.Status == MarketStatus.Initiated)
+        {
+            throw new Exception("INITIATED_MARKET_CANNOT_BE_SUSPENDED");
+        }
+
+        if (market.Status == MarketStatus.Closed)
+        {
+            throw new Exception("CLOSED_MARKET_CANNOT_BE_SUSPENDED");
+        }
+
+        return new MarketSuspended(market.Id, command.Reason, command.SuspendedAt);
     }
 }

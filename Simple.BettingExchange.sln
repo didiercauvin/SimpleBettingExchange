@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Éléments de solution", "�
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simple.BettingExchange.Tests", "Simple.BettingExchange.Tests\Simple.BettingExchange.Tests.csproj", "{DC0E7734-2F1D-4561-8672-C86AB30B948C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{3B13D7DC-6A59-4365-B100-22713E12BFC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B13D7DC-6A59-4365-B100-22713E12BFC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B13D7DC-6A59-4365-B100-22713E12BFC7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC0E7734-2F1D-4561-8672-C86AB30B948C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC0E7734-2F1D-4561-8672-C86AB30B948C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC0E7734-2F1D-4561-8672-C86AB30B948C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC0E7734-2F1D-4561-8672-C86AB30B948C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

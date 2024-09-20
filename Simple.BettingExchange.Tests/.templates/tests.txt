@@ -1,0 +1,14 @@
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace {namespace}
+{
+    [TestClass]
+    public class {itemname}
+    {
+        [TestMethod]
+        public void MyTest() 
+        {
+            $
+        }
+    }
+}
