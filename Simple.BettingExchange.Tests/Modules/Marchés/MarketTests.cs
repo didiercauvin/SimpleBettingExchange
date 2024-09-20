@@ -5,7 +5,7 @@ using Simple.BettingExchange.Api.Modules.Markets;
 using System.Linq;
 using static Simple.BettingExchange.Api.Modules.Markets.MarketHandlers;
 
-namespace Simple.BettingExchange.Tests;
+namespace Simple.BettingExchange.Tests.Modules.Marchés;
 
 [TestClass]
 public class MarketTests
@@ -85,7 +85,7 @@ public class MarketTests
         var opened = new MarketOpened(marketId, DateTimeOffset.Parse("20/09/2024 14:00:00"));
 
         _spec.Given(
-                initiated, 
+                initiated,
                 opened
              )
             .When(market => Handle(new SuspendMarket(marketId, "trop de pluie", DateTimeOffset.Parse("20/09/2024 18:00:00")), market))
