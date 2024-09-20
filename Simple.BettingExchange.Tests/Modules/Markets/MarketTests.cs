@@ -5,7 +5,7 @@ using Simple.BettingExchange.Api.Modules.Markets;
 using System.Linq;
 using static Simple.BettingExchange.Api.Modules.Markets.MarketHandlers;
 
-namespace Simple.BettingExchange.Tests.Modules.Marchés;
+namespace Simple.BettingExchange.Tests.Modules.Markets;
 
 [TestClass]
 public class MarketTests

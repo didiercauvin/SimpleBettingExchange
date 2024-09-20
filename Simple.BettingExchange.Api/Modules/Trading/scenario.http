@@ -16,8 +16,8 @@ Content-Type: application/json
     "traderId": "A266CE9E-19C8-43EF-992B-72FD9A68E3CC", 
     "selectionId": "{{SelectionId}}",
     "orderType": "Back", 
-    "odds": 2.5, 
-    "price": 100.0
+    "price": 2.5, 
+    "size": 100.0
 }
 
 ###

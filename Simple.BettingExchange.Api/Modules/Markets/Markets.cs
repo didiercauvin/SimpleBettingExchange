@@ -34,7 +34,7 @@ public enum MarketStatus
     Closed
 }
 
-public record MarketSelection(Guid Id, string Name, decimal OddsBack = 5, decimal OddsLay = 5);
+public record MarketSelection(Guid Id, string Name, decimal PriceBack = 5, decimal PriceLay = 5);
 
 public record Market(Guid Id, string Name, MarketSelection[] Lines, MarketStatus Status)
 {
@@ -67,13 +67,13 @@ public record Market(Guid Id, string Name, MarketSelection[] Lines, MarketStatus
 }
 
 public sealed record ShortMarket(Guid Id, string Name, ShortMarketSelection[] Selections, string Status);
-public sealed record ShortMarketSelection(Guid Id, string Name, decimal OddsBack, decimal OddsLay);
+public sealed record ShortMarketSelection(Guid Id, string Name, decimal PriceBack, decimal PriceLay);
 
 public sealed class AllMarketsProjection : SingleStreamProjection<ShortMarket>
 {
     public static ShortMarket Create(MarketInitiated initiated)
     {
-        return new(initiated.Id, initiated.Name, initiated.Selections.Select(l => new ShortMarketSelection(l.Id, l.Name, l.OddsBack, l.OddsLay)).ToArray(), "Initié");
+        return new(initiated.Id, initiated.Name, initiated.Selections.Select(l => new ShortMarketSelection(l.Id, l.Name, l.PriceBack, l.PriceLay)).ToArray(), "Initié");
     }
 
     public ShortMarket Apply(MarketOpened opened, ShortMarket market)

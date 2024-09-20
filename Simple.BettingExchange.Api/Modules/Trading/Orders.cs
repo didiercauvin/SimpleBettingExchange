@@ -7,14 +7,14 @@ using static Microsoft.AspNetCore.Http.TypedResults;
 
 namespace Simple.BettingExchange.Api.Modules.Trading;
 
-public sealed record PlaceOrder(Guid MarketId, Guid TraderId, Guid SelectionId, string OrderType, decimal Odds, decimal Price);
+public sealed record PlaceOrder(Guid MarketId, Guid TraderId, Guid SelectionId, string OrderType, decimal Size, decimal Price);
 public sealed record MatchOrder(Guid OrderId);
 public sealed record RefuseOrder(Guid OrderId, string Reason);
 public sealed record CancelOrder(Guid OrderId);
 public sealed record SettleOrder(Guid OrderId);
 public sealed record LapseOrder(Guid OrderId);
 
-public record OrderPended(Guid MarketId, Guid OrderId, Guid TraderId, Guid SelectionId, OrderType OrderType, decimal Odds, decimal Price);
+public record OrderPended(Guid MarketId, Guid OrderId, Guid TraderId, Guid SelectionId, OrderType OrderType, decimal Size, decimal Price);
 public record OrderMatched(Guid OrderId);
 public record OrderRefused(Guid OrderId, string Reason);
 public record OrderCancelled(Guid OrderId);
@@ -37,13 +37,13 @@ public enum OrderStatus
     Lapsed
 }
 
-public sealed record Order(Guid Id, Guid MarketId, Guid TraderId, Guid SelectionId, OrderType OrderType, decimal Odds, decimal Price, OrderStatus Status = OrderStatus.Pended)
+public sealed record Order(Guid Id, Guid MarketId, Guid TraderId, Guid SelectionId, OrderType OrderType, decimal Size, decimal Price, OrderStatus Status = OrderStatus.Pended)
 {
     public static Order Create(OrderPended pended)
     {
-        var (marketId, orderId, traderId, selectionId, orderType, odds, price) = pended;
+        var (marketId, orderId, traderId, selectionId, orderType, size, price) = pended;
 
-        return new Order(orderId, marketId, traderId, selectionId, orderType, odds, price);
+        return new Order(orderId, marketId, traderId, selectionId, orderType, size, price);
     }
 
     public Order Apply(OrderMatched matched)
@@ -78,15 +78,15 @@ public sealed record Order(Guid Id, Guid MarketId, Guid TraderId, Guid Selection
 
 }
 
-public record OrderResume(Guid Id, Guid MarketId, Guid TraderId, Guid SelectionId, string OrderType, decimal Odds, decimal Price, string Status = "En attente");
+public record OrderResume(Guid Id, Guid MarketId, Guid TraderId, Guid SelectionId, string OrderType, decimal Size, decimal Price, string Status = "En attente");
 
 public sealed class AllMarketOrdersProjection : SingleStreamProjection<OrderResume>
 {
     public static OrderResume Create(OrderPended pended)
     {
-        var (marketId, orderId, traderId, selectionId, orderType, odds, price) = pended;
+        var (marketId, orderId, traderId, selectionId, orderType, size, price) = pended;
 
-        return new(orderId, marketId, traderId, selectionId, orderType.ToString(), odds, price);
+        return new(orderId, marketId, traderId, selectionId, orderType.ToString(), size, price);
     }
 
     public OrderResume Apply(OrderMatched matched, OrderResume order)
@@ -129,10 +129,10 @@ public static class TradingEndpointHandler
     [WolverinePost("/api/orders/place")]
     public static (CreationResponse, IStartStream) PlaceOrder(PlaceOrder command)
     {
-        var (marketId, traderId, selectionId, orderType, odds, price) = command;
+        var (marketId, traderId, selectionId, orderType, size, price) = command;
 
         var orderId = CombGuidIdGeneration.NewGuid();
-        var @event = new OrderPended(marketId, orderId, traderId, selectionId, (OrderType)Enum.Parse(typeof(OrderType), orderType), odds, price);
+        var @event = new OrderPended(marketId, orderId, traderId, selectionId, (OrderType)Enum.Parse(typeof(OrderType), orderType), size, price);
         return (
         new CreationResponse($"api/orders/{orderId}"),
             new StartStream<Order>(orderId, @event)
