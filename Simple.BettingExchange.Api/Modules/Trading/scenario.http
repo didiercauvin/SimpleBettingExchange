@@ -1,0 +1,36 @@
+﻿@Api_HostAddress=https://localhost:7232
+
+GET {{Api_HostAddress}}/api/orders/01920ad2-ec59-4d1e-bbe2-db445c70ccd4
+Accept: application/json
+
+###
+
+POST {{Api_HostAddress}}/api/orders/place
+Content-Type: application/json
+
+{
+    "marketId": "01920ad2-ec59-4d1e-bbe2-db445c70ccd4", 
+    "traderId": "A266CE9E-19C8-43EF-992B-72FD9A68E3CC", 
+    "selectionId": "9ac08381-72b5-4ca9-a69b-662447a34b4a", 
+    "orderType": "Back", 
+    "odds": 2.5, 
+    "price": 100.0
+}
+
+###
+
+POST {{Api_HostAddress}}/api/orders/01920ad5-1c58-4cb5-81c9-3563a21ddc47/match
+Content-Type: application/json
+
+{
+    "orderId": "01920ad5-1c58-4cb5-81c9-3563a21ddc47"
+}
+
+###
+
+POST {{Api_HostAddress}}/api/orders/01920ad5-1c58-4cb5-81c9-3563a21ddc47/settle
+Content-Type: application/json
+
+{
+    "orderId": "01920ad5-1c58-4cb5-81c9-3563a21ddc47"
+}

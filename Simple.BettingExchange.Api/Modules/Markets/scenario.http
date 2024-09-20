@@ -1,0 +1,97 @@
+﻿@Api_HostAddress=https://localhost:7232
+
+GET {{Api_HostAddress}}/api/markets/
+
+###
+
+GET {{Api_HostAddress}}/api/markets/01920e75-a176-4b49-892e-e3b5f5845acb/events
+
+###
+
+POST {{Api_HostAddress}}/api/markets
+Content-Type: application/json
+
+{
+    "name": "Match Odds PSG / OM",
+    "lines": [
+      { "name": "Victoire du PSG" },
+      { "name": "Victoire de l'OM" },
+      { "name": "Match nul" }
+    ]
+}
+
+###
+
+POST {{Api_HostAddress}}/api/markets/01920e7d-cdf6-42b8-8a5c-fb38f20b6d80/open
+Content-Type: application/json
+
+{
+    "marketId": "01920e7d-cdf6-42b8-8a5c-fb38f20b6d80"
+}
+
+###
+
+POST {{Api_HostAddress}}/api/markets/01920ad2-ec59-4d1e-bbe2-db445c70ccd4/suspend
+Content-Type: application/json
+
+{
+    "marketId": "01920ad2-ec59-4d1e-bbe2-db445c70ccd4"
+}
+
+###
+
+POST {{Api_HostAddress}}/api/markets/01920ad2-ec59-4d1e-bbe2-db445c70ccd4/resume
+Content-Type: application/json
+
+{
+    "marketId": "01920ad2-ec59-4d1e-bbe2-db445c70ccd4"
+}
+
+###
+
+POST {{Api_HostAddress}}/api/markets/01920ad2-ec59-4d1e-bbe2-db445c70ccd4/suspend
+Content-Type: application/json
+
+{
+    "marketId": "01920ad2-ec59-4d1e-bbe2-db445c70ccd4"
+}
+
+###
+
+POST {{Api_HostAddress}}/api/markets/01920ad2-ec59-4d1e-bbe2-db445c70ccd4/close
+Content-Type: application/json
+
+{
+    "marketId": "01920ad2-ec59-4d1e-bbe2-db445c70ccd4"
+}
+
+###
+
+POST {{Api_HostAddress}}/api/markets
+Content-Type: application/json
+
+{
+    "name": "over/under 0.5 PSG / OM",
+    "lines": [
+      { "name": "over 0.5" },
+      { "name": "under 0.5" }
+    ]
+}
+
+###
+
+POST {{Api_HostAddress}}/api/markets/019205b5-9854-416f-8205-2acbfd4a05cb/open
+Content-Type: application/json
+
+{
+    "marketId": "019205b5-9854-416f-8205-2acbfd4a05cb"
+}
+
+###
+
+POST {{Api_HostAddress}}/api/markets/019205b5-9854-416f-8205-2acbfd4a05cb/close
+Content-Type: application/json
+
+{
+    "marketId": "019205b5-9854-416f-8205-2acbfd4a05cb"
+}
