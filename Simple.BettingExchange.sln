@@ -3,7 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simple.BettingExchange.Api", "Simple.BettingExchange.Api\Simple.BettingExchange.Api.csproj", "{3B13D7DC-6A59-4365-B100-22713E12BFC7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.BettingExchange.Api", "Simple.BettingExchange.Api\Simple.BettingExchange.Api.csproj", "{3B13D7DC-6A59-4365-B100-22713E12BFC7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Éléments de solution", "Éléments de solution", "{6182E4EE-E9BC-43A2-B90F-DE33859F6354}"
+	ProjectSection(SolutionItems) = preProject
+		Readme.md = Readme.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
