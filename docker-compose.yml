@@ -1,0 +1,59 @@
+version: '3'
+services:
+    postgres:
+        image: postgres
+        restart: always
+        ports:
+            - "5432:5432"
+        # set shared memory limit when using docker-compose
+        shm_size: 128mb
+        networks:
+            - postgres
+        # or set shared memory limit when deploy via swarm stack
+        volumes:
+         - postgres:/var/lib/postgresql/data
+        environment:
+            POSTGRES_PASSWORD: "test1234"
+            POSTGRES_USER: "postgres"
+            POSTGRES_DB: "postgres"
+        healthcheck:
+          test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+          interval: 10s
+          timeout: 5s
+          retries: 5
+
+    pgadmin:
+        image: dpage/pgadmin4
+        container_name: pgadmin
+        environment:
+            PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-didier.cauvin@elap.io}
+            PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+        ports:
+            - "${PGADMIN_PORT:-5050}:80"
+        networks:
+            - postgres
+        volumes:
+            - pgadmin:/var/lib/pgadmin
+            
+    backend:
+        build:
+            dockerfile: Dockerfile
+            context: .
+        container_name: simple_betting_exchange
+        environment:
+            ConnectionStrings__BettingExchange: "PORT=5432; HOST=host.docker.internal; TIMEOUT=15; POOLING=True; MINPOOLSIZE=1; MAXPOOLSIZE=100; COMMANDTIMEOUT=20; DATABASE='postgres'; PASSWORD='test1234'; USER ID='postgres'; Persist Security Info=true; Include Error Detail=true;"
+        ports:
+            - "5555:5000"
+        depends_on:
+            postgres:
+                condition: service_healthy
+        networks:
+            - postgres
+
+networks:
+    postgres:
+        driver: bridge
+
+volumes:
+    postgres:
+    pgadmin:
