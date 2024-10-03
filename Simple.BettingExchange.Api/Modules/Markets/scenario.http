@@ -1,14 +1,14 @@
-﻿@Api_HostAddress=http://localhost:5555/
+﻿@Api_HostAddress=https://localhost:7232
 
-GET http://localhost:5555/api/markets/
-
-###
-
-GET http://localhost:5555/api/markets/83663b95-242b-414c-a293-bbc142af0b9c/events
+GET {{Api_HostAddress}}/api/markets/
 
 ###
 
-POST http://localhost:5555/api/markets
+GET {{Api_HostAddress}}/api/markets/83663b95-242b-414c-a293-bbc142af0b9c/events
+
+###
+
+POST {{Api_HostAddress}}/api/markets
 Content-Type: application/json
 
 {
