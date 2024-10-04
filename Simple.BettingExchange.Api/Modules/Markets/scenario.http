@@ -22,11 +22,11 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:5555/api/markets/83663b95-242b-414c-a293-bbc142af0b9c/open
+POST {{Api_HostAddress}}/api/markets/019252e7-7178-4527-9ae0-bed367abc032/open
 Content-Type: application/json
 
 {
-    "marketId": "83663b95-242b-414c-a293-bbc142af0b9c"
+    "marketId": "019252e7-7178-4527-9ae0-bed367abc032"
 }
 
 ###

@@ -11,6 +11,8 @@ using Wolverine.Marten;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -22,7 +24,7 @@ builder.Host.UseWolverine(opts =>
         var schemaName = "IntroBettingExchange";
         options.DatabaseSchemaName = schemaName;
         // Establish the connection string to your Marten database
-        options.Connection(builder.Configuration.GetConnectionString("BettingExchange")!);
+        options.Connection(builder.Configuration.GetConnectionString("postgres")!);
 
         // Specify that we want to use STJ as our serializer
         options.UseSystemTextJsonForSerialization(
@@ -59,6 +61,8 @@ builder.Host.UseWolverine(opts =>
 });
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 app.MapWolverineEndpoints();
 
