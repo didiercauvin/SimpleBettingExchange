@@ -1,10 +1,14 @@
 ﻿@Api_HostAddress=https://localhost:7232
+@MarketId=019256d8-16ea-4e71-91a7-7cef9b4f08db
 
 GET {{Api_HostAddress}}/api/markets/
 
 ###
 
-GET {{Api_HostAddress}}/api/markets/83663b95-242b-414c-a293-bbc142af0b9c/events
+GET {{Api_HostAddress}}/api/markets/{{MarketId}}/events
+
+###
+GET {{Api_HostAddress}}/api/markets/{{MarketId}}
 
 ###
 
@@ -22,47 +26,47 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:5555/api/markets/83663b95-242b-414c-a293-bbc142af0b9c/open
+POST {{Api_HostAddress}}/api/markets/{{MarketId}}/open
 Content-Type: application/json
 
 {
-    "marketId": "83663b95-242b-414c-a293-bbc142af0b9c"
+    "marketId": "{{MarketId}}"
 }
 
 ###
 
-POST {{Api_HostAddress}}/api/markets/01920ad2-ec59-4d1e-bbe2-db445c70ccd4/suspend
+POST {{Api_HostAddress}}/api/markets/{{MarketId}}/suspend
 Content-Type: application/json
 
 {
-    "marketId": "01920ad2-ec59-4d1e-bbe2-db445c70ccd4"
+    "marketId": "{{MarketId}}"
 }
 
 ###
 
-POST {{Api_HostAddress}}/api/markets/01920ad2-ec59-4d1e-bbe2-db445c70ccd4/resume
+POST {{Api_HostAddress}}/api/markets/{{MarketId}}/resume
 Content-Type: application/json
 
 {
-    "marketId": "01920ad2-ec59-4d1e-bbe2-db445c70ccd4"
+    "marketId": "{{MarketId}}"
 }
 
 ###
 
-POST {{Api_HostAddress}}/api/markets/01920ad2-ec59-4d1e-bbe2-db445c70ccd4/suspend
+POST {{Api_HostAddress}}/api/markets/{{MarketId}}/suspend
 Content-Type: application/json
 
 {
-    "marketId": "01920ad2-ec59-4d1e-bbe2-db445c70ccd4"
+    "marketId": "{{MarketId}}"
 }
 
 ###
 
-POST {{Api_HostAddress}}/api/markets/01920ad2-ec59-4d1e-bbe2-db445c70ccd4/close
+POST {{Api_HostAddress}}/api/markets/{{MarketId}}/close
 Content-Type: application/json
 
 {
-    "marketId": "01920ad2-ec59-4d1e-bbe2-db445c70ccd4"
+    "marketId": "{{MarketId}}"
 }
 
 ###
