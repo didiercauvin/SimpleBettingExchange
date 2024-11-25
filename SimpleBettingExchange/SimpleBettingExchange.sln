@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleBettingExchange.Api", "SimpleBettingExchange.Api\SimpleBettingExchange.Api.csproj", "{8E8B2A86-06B8-4D9E-A71B-BE8635B89101}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{D596517C-B73A-4D39-81D5-ED5C44BB30E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleBettingExchange.Markets", "SimpleBettingExchange.Markets\SimpleBettingExchange.Markets.csproj", "{EA9F24ED-CC8D-478A-8EFF-84E8A7AD4DF1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleBettingEchange.Core", "SimpleBettingEchange.Core\SimpleBettingEchange.Core.csproj", "{57200719-1A87-4AD8-957D-DC1B8ABC67EA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8E8B2A86-06B8-4D9E-A71B-BE8635B89101}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E8B2A86-06B8-4D9E-A71B-BE8635B89101}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E8B2A86-06B8-4D9E-A71B-BE8635B89101}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E8B2A86-06B8-4D9E-A71B-BE8635B89101}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA9F24ED-CC8D-478A-8EFF-84E8A7AD4DF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA9F24ED-CC8D-478A-8EFF-84E8A7AD4DF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA9F24ED-CC8D-478A-8EFF-84E8A7AD4DF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA9F24ED-CC8D-478A-8EFF-84E8A7AD4DF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57200719-1A87-4AD8-957D-DC1B8ABC67EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57200719-1A87-4AD8-957D-DC1B8ABC67EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57200719-1A87-4AD8-957D-DC1B8ABC67EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57200719-1A87-4AD8-957D-DC1B8ABC67EA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EA9F24ED-CC8D-478A-8EFF-84E8A7AD4DF1} = {D596517C-B73A-4D39-81D5-ED5C44BB30E8}
+	EndGlobalSection
+EndGlobal

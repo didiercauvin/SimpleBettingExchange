@@ -1,0 +1,21 @@
+@SimpleBettingExchange.Api_HostAddress = http://localhost:5163
+
+GET {{SimpleBettingExchange.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+POST http://localhost:5163/api/markets
+Content-Type: application/json
+
+{
+  "name": "marché 1",
+  "lines": [
+    {
+      "name": "over 1.5"
+    },
+    {
+      "name": "under 1.5"
+    }
+  ]
+}
