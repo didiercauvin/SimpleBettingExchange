@@ -11,18 +11,18 @@ using System.Xml;
 
 namespace SimpleBettingExchange.Markets;
 
-public interface ICreateMarketGrain : IGrainWithGuidKey
+public interface IMarketGrain : IGrainWithGuidKey
 {
     Task Create(Guid id, string name, IEnumerable<MarketLineState> lines);
 }
 
-public class CreateMarketGrain : JournaledGrain<MarketState, IEvent>, ICreateMarketGrain, ICustomStorageInterface<MarketState, IEvent>
+public class MarketGrain : JournaledGrain<MarketState, IEvent>, IMarketGrain, ICustomStorageInterface<MarketState, IEvent>
 {
     private readonly IEventStore _eventStore;
-    private readonly ILogger<CreateMarketGrain> _logger;
+    private readonly ILogger<MarketGrain> _logger;
     private string _streamId;
 
-    public CreateMarketGrain(IEventStore eventStore, ILogger<CreateMarketGrain> logger)
+    public MarketGrain(IEventStore eventStore, ILogger<MarketGrain> logger)
     {
         _eventStore = eventStore;
         _logger = logger;
@@ -96,7 +96,7 @@ public class MarketState
         }
     }
 
-    public void Apply(MarketCreated created)
+    protected void Apply(MarketCreated created)
     {
         Id = created.Id;
         Name = created.Name;

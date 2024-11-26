@@ -16,7 +16,7 @@ public class OrleansMarketRepository : IMarketRepository
 
     public async Task Add(Market market, CancellationToken cancellationToken)
     {
-        var grain = _grainFactory.GetGrain<ICreateMarketGrain>(market.Id);
+        var grain = _grainFactory.GetGrain<IMarketGrain>(market.Id);
         await grain.Create(market.Id, market.Name, market.Lines.Select(l => new MarketLineState(l.Id, l.Name)).ToArray());
     }
 }

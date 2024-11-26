@@ -23,8 +23,6 @@ public class Market
     
     public static Market Create(Guid id, string name, IEnumerable<MarketLine> lines) 
         => new(id, name, lines);
-
-    
 }
 
 public class MarketLine
