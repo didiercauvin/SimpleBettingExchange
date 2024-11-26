@@ -10,37 +10,37 @@ public static class MarketEndPoints
 {
     public static IEndpointRouteBuilder UseCreateMarketEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/api/markets", async (IGrainFactory grainFactory, CreateMarketRequest body) =>
+        endpoints.MapPost("/api/markets", async (CreateMarketRequest body, IMarketRepository repository) =>
         {
-            var marketId = Guid.NewGuid();
-            var grain = grainFactory.GetGrain<ICreateMarketGrain>(marketId);
-            
-            await grain.Create(marketId, body.Name, body.Lines.Select(l => new MarketLine(Guid.NewGuid(), l.Name)).ToArray());
+            var handler = new CreateMarketCommandHandler(repository);
+
+            await handler.Handle(new CreateMarketCommand(body.Name, body.Lines.Select(l => new CreateMarketLine(Guid.NewGuid(), l.Name))), CancellationToken.None);
         });
         
         return endpoints;
     }
 }
 
-public record CreateMarket(Guid Id, string Name, MarketLines Lines);
+public record CreateMarketCommand(string Name, IEnumerable<CreateMarketLine> Lines);
 
-public interface ICreateMarketGrain : IGrainWithGuidKey
+public record CreateMarketLine(Guid Id, string Name);
+
+public class CreateMarketCommandHandler
 {
-    Task Create(Guid id, string name, MarketLine[] lines);
-}
+    private readonly IMarketRepository _repository;
 
-public class CreateMarketGrain : Grain, ICreateMarketGrain
-{
-    private readonly IRepository<Market> _repository;
-    public Market Market { get; set; }
-
-    public CreateMarketGrain(IRepository<Market> repository)
+    public CreateMarketCommandHandler(IMarketRepository repository)
     {
         _repository = repository;
     }
-    
-    public async Task Create(Guid id, string name, MarketLine[] lines)
+
+    public async Task Handle(CreateMarketCommand command, CancellationToken ct)
     {
-        await _repository.Add(id, Market.Create(id, name, lines), CancellationToken.None);
+        var marketId = Guid.NewGuid();
+        var (name, lines) = command;
+
+        var market = Market.Create(marketId, name, lines.Select(l => new MarketLine(l.Id, l.Name)));
+
+        await _repository.Add(market, ct);
     }
 }

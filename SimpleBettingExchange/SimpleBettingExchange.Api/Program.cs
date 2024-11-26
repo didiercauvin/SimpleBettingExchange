@@ -5,13 +5,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Host.UseOrleans(static builder =>
 {
     builder.UseLocalhostClustering();
+    builder.UseDashboard();
+    builder.AddCustomStorageBasedLogConsistencyProvider("MarketStore").AddCustomStorageBasedLogConsistencyProviderAsDefault();
 });
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddSingleton<IRepository<Market>, InMemoryRepository<Market>>();
+builder.Services.AddSingleton<IEventStore, InMemoryEventStore>();
+builder.Services.AddSingleton<IMarketRepository, OrleansMarketRepository>();
 
 var app = builder.Build();
 
