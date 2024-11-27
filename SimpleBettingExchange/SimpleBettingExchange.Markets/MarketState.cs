@@ -1,9 +1,10 @@
 ﻿namespace SimpleBettingExchange.Markets;
 
-public record MarketCreated(Guid Id, string Name, IEnumerable<MarketLineState> Lines, DateTimeOffset CreatedAt) : IEvent;
+public record MarketCreated(Guid Id, string Name, MarketLineState[] Lines, DateTimeOffset CreatedAt) : IEvent;
 
 public enum MarketStatus { Created, Opened, Suspended, Closed }
 
+[GenerateSerializer]
 public class MarketState
 {
     public Guid Id { get; set; }
@@ -28,8 +29,9 @@ public class MarketState
     }
 }
 
+[GenerateSerializer]
 public class MarketLineState(Guid id, string name)
 {
-    public Guid Id { get; } = id;
-    public string Name { get; } = name;
+    [Id(0)] public Guid Id { get; } = id;
+    [Id(1)] public string Name { get; } = name;
 }

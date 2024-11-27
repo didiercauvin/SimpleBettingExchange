@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.CodeAnalysis;
 using static Microsoft.AspNetCore.Http.TypedResults;
 
 namespace SimpleBettingExchange.Markets;
@@ -12,12 +13,11 @@ public static class MarketEndPoints
 {
     public static IEndpointRouteBuilder UseCreateMarketEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/api/markets", async (CreateMarketRequest body, IGrainFactory grainFactory) =>
+        endpoints.MapPost("/api/markets", async (CreateMarketRequest body, IMarketRepository repository) =>
         {
             var marketId = Guid.NewGuid();
-            var grain = grainFactory.GetGrain<IMarketGrain>(marketId);
 
-            await grain.Create(new CreateMarketCommand(body.Name, body.Lines.Select(l => new CreateMarketLine(Guid.NewGuid(), l.Name)).ToArray()));
+            await MarketServices.Handle(new CreateMarket(marketId, body.Name, body.Lines.Select(l => new CreateMarketLine(Guid.NewGuid(), l.Name)).ToArray()), repository, CancellationToken.None);
 
             return Created($"/api/markets/{marketId}", marketId);
         });
@@ -26,10 +26,9 @@ public static class MarketEndPoints
     }
 }
 
-[GenerateSerializer]
-public record CreateMarketCommand(string Name, CreateMarketLine[] Lines);
 
-[GenerateSerializer]
+public record CreateMarket(Guid Id, string Name, CreateMarketLine[] Lines);
+
 public class CreateMarketLine
 {
     public CreateMarketLine(Guid id, string name)
@@ -38,6 +37,45 @@ public class CreateMarketLine
         Name = name;
     }
 
-    [Id(0)] public Guid Id { get; set; }
-    [Id(1)] public string Name { get; set; }
+    public Guid Id { get; set; }
+    public string Name { get; set; }
+}
+
+public static class MarketServices
+{
+    public static async Task Handle(CreateMarket createMarket, IMarketRepository repository, CancellationToken ct)
+    {
+        var market = Market.Create(createMarket.Id, createMarket.Name, createMarket.Lines.Select(l => new MarketLine(Guid.NewGuid(), l.Name)));
+
+        await repository.Add(market, ct);
+    }
+}
+
+public class Market
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; }
+    public MarketLine[] Lines { get; set; }
+
+    public Market(Guid id, string name, IEnumerable<MarketLine> lines)
+    {
+        Id = id;
+        Name = name;
+        Lines = lines.ToArray();
+    }
+
+    public static Market Create(Guid id, string name, IEnumerable<MarketLine> lines)
+        => new Market(id, name, lines);
+}
+
+public class MarketLine
+{
+    public MarketLine(Guid id, string name)
+    {
+        Id = id;
+        Name = name;
+    }
+
+    public Guid Id { get; set; }
+    public string Name { get; set; }
 }

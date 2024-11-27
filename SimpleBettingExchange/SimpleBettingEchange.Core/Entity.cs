@@ -7,10 +7,10 @@ public abstract class Entity
     public IEnumerable<object> GetChanges() => _events.AsEnumerable();
     
     public void ClearChanges() => _events.Clear();
-    
-    protected abstract void When(object @event);
-    
-    protected void Apply(object @event)
+
+    public abstract void When(IEvent @event);
+
+    protected void Apply(IEvent @event)
     {
         When(@event);
         _events.Add(@event);

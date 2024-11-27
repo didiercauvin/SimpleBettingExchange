@@ -12,6 +12,7 @@ builder.Host.UseOrleansClient(static builder =>
 builder.Services.AddOpenApi();
 
 builder.Services.AddSingleton<IEventStore, InMemoryEventStore>();
+builder.Services.AddScoped<IMarketRepository, OrleansMarketRepository>();
 
 var app = builder.Build();
 
