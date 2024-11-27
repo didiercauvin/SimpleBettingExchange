@@ -51,16 +51,20 @@ public static class MarketServices
     }
 }
 
+public enum MarketStatus { Created, Opened, Suspended, Closed }
+
 public class Market
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
+    public MarketStatus Status { get; set; }
     public MarketLine[] Lines { get; set; }
 
-    public Market(Guid id, string name, IEnumerable<MarketLine> lines)
+    private Market(Guid id, string name, IEnumerable<MarketLine> lines)
     {
         Id = id;
         Name = name;
+        Status = MarketStatus.Created;
         Lines = lines.ToArray();
     }
 
