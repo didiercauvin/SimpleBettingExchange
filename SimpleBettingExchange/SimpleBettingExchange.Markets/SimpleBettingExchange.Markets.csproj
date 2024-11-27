@@ -7,6 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="MarketRepository.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\SimpleBettingEchange.Core\SimpleBettingEchange.Core.csproj" />
     </ItemGroup>
 

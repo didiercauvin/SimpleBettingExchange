@@ -15,7 +15,6 @@ using var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
         services.AddSingleton<IEventStore, InMemoryEventStore>();
-        services.AddSingleton<IMarketRepository, OrleansMarketRepository>();
     }).Build();
 
 

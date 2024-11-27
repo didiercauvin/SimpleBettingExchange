@@ -78,7 +78,6 @@ public record MarketCreated(Guid Id, string Name, IEnumerable<MarketLineState> L
 
 public enum MarketStatus { Created, Opened, Suspended, Closed }
 
-[GenerateSerializer]
 public class MarketState
 {
     public Guid Id { get; set; }
@@ -103,9 +102,8 @@ public class MarketState
     }
 }
 
-[GenerateSerializer]
 public class MarketLineState(Guid id, string name)
 {
-    [Id(0)] public Guid Id { get; } = id;
-    [Id(1)] public string Name { get; } = name;
+    public Guid Id { get; } = id;
+    public string Name { get; } = name;
 }
