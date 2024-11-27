@@ -9,7 +9,7 @@ namespace SimpleBettingExchange.Markets;
 public record CreateMarketRequest(string Name, CreateMarketLineRequest[] Lines);
 public record CreateMarketLineRequest(string Name);
 
-public static class MarketEndPoints
+public static class CreateMarketEndPoint
 {
     public static IEndpointRouteBuilder UseCreateMarketEndpoint(this IEndpointRouteBuilder endpoints)
     {

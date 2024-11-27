@@ -24,7 +24,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseEndpoints(c => c.UseCreateMarketEndpoint());
+app.UseEndpoints(c => {
+    c.UseCreateMarketEndpoint();
+    c.UseChangeMarketNameEndpoint();
+});
 
 var summaries = new[]
 {

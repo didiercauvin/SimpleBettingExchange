@@ -1,13 +1,14 @@
 ﻿namespace SimpleBettingExchange.Markets;
 
 public record MarketCreated(Guid Id, string Name, MarketLineState[] Lines, DateTimeOffset CreatedAt) : IEvent;
+public record MarketNameChanged(Guid Id, string Name) : IEvent;
 
 [GenerateSerializer]
 public class MarketState
 {
     public Guid Id { get; set; }
     public string Name { get; set; }
-    public MarketStatus State { get; set; }
+    public MarketStatus Status { get; set; }
     public MarketLineState[] Lines { get; set; }
 
     public void When(IEvent @event)
@@ -15,6 +16,7 @@ public class MarketState
         switch (@event)
         {
             case MarketCreated created: Apply(created); break;
+            case MarketNameChanged nameChanged: Apply(nameChanged); break;
         }
     }
 
@@ -22,8 +24,13 @@ public class MarketState
     {
         Id = created.Id;
         Name = created.Name;
-        State = MarketStatus.Created;
+        Status = MarketStatus.Created;
         Lines = created.Lines.ToArray();
+    }
+
+    public void Apply(MarketNameChanged nameChanged)
+    {
+        Name = nameChanged.Name;
     }
 }
 

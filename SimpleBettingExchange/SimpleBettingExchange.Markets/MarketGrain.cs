@@ -7,6 +7,8 @@ namespace SimpleBettingExchange.Markets;
 public interface IMarketGrain : IGrainWithGuidKey
 {
     Task Create(Guid id, string name, MarketLineState[] lines);
+    Task ChangeName(string name);
+    Task<MarketState> GetMarketState();
 }
 
 public class MarketGrain : JournaledGrain<MarketState, IEvent>, IMarketGrain, ICustomStorageInterface<MarketState, IEvent>
@@ -33,6 +35,14 @@ public class MarketGrain : JournaledGrain<MarketState, IEvent>, IMarketGrain, IC
     public Task Create(Guid id, string name, MarketLineState[] lines)
     {
         var @event = new MarketCreated(id, name, lines, DateTimeOffset.Now);
+
+        RaiseEvent(@event);
+        return ConfirmEvents();
+    }
+
+    public Task ChangeName(string name)
+    {
+        var @event = new MarketNameChanged(GrainReference.GetPrimaryKey(), name);
 
         RaiseEvent(@event);
         return ConfirmEvents();
@@ -71,6 +81,11 @@ public class MarketGrain : JournaledGrain<MarketState, IEvent>, IMarketGrain, IC
         //}
         await _eventStore.AppendToStreamAsync(_streamId, updates);
         return true;
+    }
+
+    public Task<MarketState> GetMarketState()
+    {
+        return Task.FromResult(State);
     }
 }
 

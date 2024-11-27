@@ -7,16 +7,19 @@ public class Market
     public MarketStatus Status { get; set; }
     public MarketLine[] Lines { get; set; }
 
-    private Market(Guid id, string name, IEnumerable<MarketLine> lines)
+    private Market(Guid id, string name, MarketStatus status, IEnumerable<MarketLine> lines)
     {
         Id = id;
         Name = name;
-        Status = MarketStatus.Created;
+        Status = status;
         Lines = lines.ToArray();
     }
 
     public static Market Create(Guid id, string name, IEnumerable<MarketLine> lines)
-        => new Market(id, name, lines);
+        => new Market(id, name, MarketStatus.Created, lines);
+
+    public static Market From(Guid id, string name, MarketStatus status, IEnumerable<MarketLine> lines)
+        => new Market(id, name, status, lines);
 }
 
 public enum MarketStatus { Created, Opened, Suspended, Closed }

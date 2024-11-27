@@ -19,3 +19,12 @@ Content-Type: application/json
     }
   ]
 }
+
+###
+
+POST http://localhost:5163/api/markets/0f4ee1bb-0af6-4c4f-9fc8-704ace454f0f
+Content-Type: application/json
+
+{
+  "name": "marché UHU"
+}

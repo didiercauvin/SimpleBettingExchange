@@ -10,4 +10,9 @@ public static class MarketServices
 
         await repository.Add(market, ct);
     }
+
+    public static async Task Handle(ChangeMarketName changeMarketName, IMarketRepository repository, CancellationToken ct)
+    {
+        await repository.ChangeName(changeMarketName.Id, changeMarketName.Name);
+    }
 }
