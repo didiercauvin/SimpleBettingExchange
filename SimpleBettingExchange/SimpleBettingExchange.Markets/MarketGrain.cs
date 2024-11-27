@@ -1,13 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Diagnostics;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
 using Orleans.EventSourcing;
 using Orleans.EventSourcing.CustomStorage;
-using System;
-using System.Data.Common;
-using System.Diagnostics.Eventing.Reader;
-using System.Text;
-using System.Xml;
 
 namespace SimpleBettingExchange.Markets;
 
@@ -31,6 +24,8 @@ public class MarketGrain : JournaledGrain<MarketState, IEvent>, IMarketGrain, IC
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
         _streamId = $"Market-{this.GetPrimaryKey()}";
+
+        Console.WriteLine($"Welcome _streamId {_streamId}!!");
 
         return base.OnActivateAsync(cancellationToken);
     }
@@ -79,6 +74,7 @@ public class MarketGrain : JournaledGrain<MarketState, IEvent>, IMarketGrain, IC
 
 public record MarketCreated(Guid Id, string Name, IEnumerable<MarketLineState> Lines, DateTimeOffset CreatedAt) : IEvent;
 
+public enum MarketStatus { Created, Opened, Suspended, Closed }
 
 [GenerateSerializer]
 public class MarketState
@@ -96,7 +92,7 @@ public class MarketState
         }
     }
 
-    protected void Apply(MarketCreated created)
+    public void Apply(MarketCreated created)
     {
         Id = created.Id;
         Name = created.Name;

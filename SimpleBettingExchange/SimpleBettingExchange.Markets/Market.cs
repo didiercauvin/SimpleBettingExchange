@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace SimpleBettingExchange.Markets;
 
-public enum MarketStatus {Created, Opened, Suspended, Closed}
+
 
 
 public class Market

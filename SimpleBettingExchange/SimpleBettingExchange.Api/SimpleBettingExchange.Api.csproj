@@ -8,9 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
-        <PackageReference Include="Microsoft.Orleans.Persistence.Memory" Version="9.0.1" />
-        <PackageReference Include="Microsoft.Orleans.Server" Version="9.0.1" />
-        <PackageReference Include="OrleansDashboard" Version="8.2.0" />
+        <PackageReference Include="Microsoft.Orleans.Client" Version="9.0.1" />
     </ItemGroup>
 
     <ItemGroup>

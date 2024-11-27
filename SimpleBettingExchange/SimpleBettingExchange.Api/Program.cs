@@ -2,11 +2,9 @@ using SimpleBettingExchange.Markets;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Host.UseOrleans(static builder =>
+builder.Host.UseOrleansClient(static builder =>
 {
     builder.UseLocalhostClustering();
-    builder.UseDashboard();
-    builder.AddCustomStorageBasedLogConsistencyProvider("MarketStore").AddCustomStorageBasedLogConsistencyProviderAsDefault();
 });
 
 // Add services to the container.
