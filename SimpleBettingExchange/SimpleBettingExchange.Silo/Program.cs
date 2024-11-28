@@ -9,13 +9,12 @@ using var host = Host.CreateDefaultBuilder(args)
         siloBuilder.UseDashboard();
 
         siloBuilder
-            .AddCustomStorageBasedLogConsistencyProvider("MarketStore")
             .AddCustomStorageBasedLogConsistencyProviderAsDefault();
     })
     .ConfigureServices((context, services) =>
     {
         services.AddSingleton<IEventStore, InMemoryEventStore>();
-        services.AddScoped<IMarketRepository, OrleansMarketRepository>();
+        //services.AddScoped<IMarketRepository, OrleansMarketRepository>();
     }).Build();
 
 

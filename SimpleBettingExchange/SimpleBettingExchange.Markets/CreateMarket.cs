@@ -13,11 +13,13 @@ public static class CreateMarketEndPoint
 {
     public static IEndpointRouteBuilder UseCreateMarketEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/api/markets", async (CreateMarketRequest body, IMarketRepository repository) =>
+        endpoints.MapPost("/api/markets", async (CreateMarketRequest body, IGrainFactory grainFactory) =>
         {
             var marketId = Guid.NewGuid();
 
-            await MarketServices.Handle(new CreateMarket(marketId, body.Name, body.Lines.Select(l => new CreateMarketLine(Guid.NewGuid(), l.Name)).ToArray()), repository, CancellationToken.None);
+            var marketGrain = grainFactory.GetGrain<IMarketGrain>(marketId);
+
+            await marketGrain.CreateMarket(new CreateMarket(marketId, body.Name, body.Lines.Select(l => new CreateMarketLine(Guid.NewGuid(), l.Name)).ToArray()));
 
             return Created($"/api/markets/{marketId}", marketId);
         });
@@ -26,9 +28,10 @@ public static class CreateMarketEndPoint
     }
 }
 
-
+[GenerateSerializer]
 public record CreateMarket(Guid Id, string Name, CreateMarketLine[] Lines);
 
+[GenerateSerializer]
 public class CreateMarketLine
 {
     public CreateMarketLine(Guid id, string name)
@@ -37,6 +40,6 @@ public class CreateMarketLine
         Name = name;
     }
 
-    public Guid Id { get; set; }
-    public string Name { get; set; }
+    [Id(0)] public Guid Id { get; set; }
+    [Id(1)] public string Name { get; set; }
 }
