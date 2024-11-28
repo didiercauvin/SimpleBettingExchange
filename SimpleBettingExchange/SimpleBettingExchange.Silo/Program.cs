@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Orleans.Serialization;
 using SimpleBettingExchange.Markets;
 
 using var host = Host.CreateDefaultBuilder(args)
@@ -8,8 +9,7 @@ using var host = Host.CreateDefaultBuilder(args)
         siloBuilder.UseLocalhostClustering();
         siloBuilder.UseDashboard();
 
-        siloBuilder
-            .AddCustomStorageBasedLogConsistencyProviderAsDefault();
+        siloBuilder.AddCustomStorageBasedLogConsistencyProviderAsDefault();
     })
     .ConfigureServices((context, services) =>
     {

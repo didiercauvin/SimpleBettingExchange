@@ -22,7 +22,7 @@ Content-Type: application/json
 
 ###
 
-PUT http://localhost:5163/api/markets/946484bf-3746-46a6-a7d5-5a39dcb408d2
+PUT http://localhost:5163/api/markets/ec4e95a4-5f08-4575-8420-a317545763aa
 Content-Type: application/json
 
 {

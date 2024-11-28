@@ -6,8 +6,8 @@ namespace SimpleBettingExchange.Markets;
 
 public interface IMarketGrain : IGrainWithGuidKey
 {
-    Task CreateMarket(CreateMarket command);
-    Task ChangeName(ChangeMarketName command);
+    Task CreateMarket(CreateMarketCommand command);
+    Task ChangeName(ChangeMarketNameCommand command);
     Task<MarketState> GetMarketState();
 }
 
@@ -32,7 +32,7 @@ public class MarketGrain : JournaledGrain<MarketState, IEvent>, IMarketGrain, IC
         return base.OnActivateAsync(cancellationToken);
     }
 
-    public Task CreateMarket(CreateMarket command)
+    public Task CreateMarket(CreateMarketCommand command)
     {
         var @event = MarketServices.Handle(command);
 
@@ -40,7 +40,7 @@ public class MarketGrain : JournaledGrain<MarketState, IEvent>, IMarketGrain, IC
         return ConfirmEvents();
     }
 
-    public Task ChangeName(ChangeMarketName command)
+    public Task ChangeName(ChangeMarketNameCommand command)
     {
         var @event = MarketServices.Handle(command);
 

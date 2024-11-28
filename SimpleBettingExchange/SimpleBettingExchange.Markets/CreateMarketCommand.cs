@@ -19,7 +19,7 @@ public static class CreateMarketEndPoint
 
             var marketGrain = grainFactory.GetGrain<IMarketGrain>(marketId);
 
-            await marketGrain.CreateMarket(new CreateMarket(marketId, body.Name, body.Lines.Select(l => new CreateMarketLine(Guid.NewGuid(), l.Name)).ToArray()));
+            await marketGrain.CreateMarket(new CreateMarketCommand(marketId, body.Name, body.Lines.Select(l => new CreateMarketLineCommand(Guid.NewGuid(), l.Name)).ToArray()));
 
             return Created($"/api/markets/{marketId}", marketId);
         });
@@ -29,12 +29,12 @@ public static class CreateMarketEndPoint
 }
 
 [GenerateSerializer]
-public record CreateMarket(Guid Id, string Name, CreateMarketLine[] Lines);
+public record CreateMarketCommand(Guid Id, string Name, CreateMarketLineCommand[] Lines);
 
 [GenerateSerializer]
-public class CreateMarketLine
+public class CreateMarketLineCommand
 {
-    public CreateMarketLine(Guid id, string name)
+    public CreateMarketLineCommand(Guid id, string name)
     {
         Id = id;
         Name = name;

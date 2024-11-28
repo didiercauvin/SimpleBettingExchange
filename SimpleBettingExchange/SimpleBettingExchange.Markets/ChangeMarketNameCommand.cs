@@ -6,7 +6,7 @@ namespace SimpleBettingExchange.Markets;
 public record ChangeMarketNameRequest(string Name);
 
 [GenerateSerializer]
-public record ChangeMarketName(Guid Id, string Name);
+public record ChangeMarketNameCommand(Guid Id, string Name);
 
 public static class ChangeMarketNameEndPoint
 {
@@ -16,7 +16,7 @@ public static class ChangeMarketNameEndPoint
         {
             var marketGrain = grainFactory.GetGrain<IMarketGrain>(marketId);
 
-            await marketGrain.ChangeName(new ChangeMarketName(marketId, request.Name));
+            await marketGrain.ChangeName(new ChangeMarketNameCommand(marketId, request.Name));
         });
 
         return endpoints;
