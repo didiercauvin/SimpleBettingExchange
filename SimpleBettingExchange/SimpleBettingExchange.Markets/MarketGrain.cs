@@ -34,8 +34,7 @@ public class MarketGrain : JournaledGrain<MarketState, IEvent>, IMarketGrain, IC
 
     public Task CreateMarket(CreateMarket command)
     {
-        var (id, name, lines) = command;
-        var @event = new MarketCreated(id, name, lines.Select(l => new MarketLineState(l.Id, l.Name)).ToArray(), DateTimeOffset.Now);
+        var @event = MarketServices.Handle(command);
 
         RaiseEvent(@event);
         return ConfirmEvents();
@@ -43,7 +42,7 @@ public class MarketGrain : JournaledGrain<MarketState, IEvent>, IMarketGrain, IC
 
     public Task ChangeName(ChangeMarketName command)
     {
-        var @event = new MarketNameChanged(GrainReference.GetPrimaryKey(), command.Name);
+        var @event = MarketServices.Handle(command);
 
         RaiseEvent(@event);
         return ConfirmEvents();

@@ -1,18 +1,18 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Xml.Linq;
 
 namespace SimpleBettingExchange.Markets;
 
 public static class MarketServices
 {
-    public static async Task Handle(CreateMarket createMarket, IMarketRepository repository, CancellationToken ct)
+    public static MarketCreated Handle(CreateMarket createMarket)
     {
-        var market = Market.Create(createMarket.Id, createMarket.Name, createMarket.Lines.Select(l => new MarketLine(Guid.NewGuid(), l.Name)));
-
-        await repository.Add(market, ct);
+        var (id, name, lines) = createMarket;
+        return new MarketCreated(id, name, lines.Select(l => new MarketLineState(l.Id, l.Name)).ToArray(), DateTimeOffset.Now);
     }
 
-    public static async Task Handle(ChangeMarketName changeMarketName, IMarketRepository repository, CancellationToken ct)
+    public static MarketNameChanged Handle(ChangeMarketName changeMarketName)
     {
-        await repository.ChangeName(changeMarketName.Id, changeMarketName.Name);
+        return new MarketNameChanged(changeMarketName.Id, changeMarketName.Name);
     }
 }
