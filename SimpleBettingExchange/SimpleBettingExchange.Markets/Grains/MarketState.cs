@@ -3,6 +3,9 @@
 public record MarketCreated(Guid Id, string Name, DateTimeOffset StartTime, DateTimeOffset CreatedAt) : IEvent;
 public record MarketNameChanged(Guid Id, string Name) : IEvent;
 public record MarketRunnersAdded(Guid MarketId, Runner[] Runners) : IEvent;
+public record MarketSuspended(Guid MarketId, DateTimeOffset Date) : IEvent;
+public record MarketResumed(Guid MarketId, DateTimeOffset Date) : IEvent;
+public record MarketClosed(Guid MarkerId, DateTimeOffset Date) : IEvent;
 
 public enum MarketStatus { Created, Opened, Suspended, Closed }
 
@@ -23,6 +26,9 @@ public class MarketState
             case MarketCreated created: Apply(created); break;
             case MarketNameChanged nameChanged: Apply(nameChanged); break;
             case MarketRunnersAdded runnersAdded: Apply(runnersAdded); break;
+            case MarketSuspended suspended: Apply(suspended); break;
+            case MarketResumed resumed: Apply(resumed); break;
+            case MarketClosed closed: Apply(closed); break;
         }
     }
 
@@ -44,6 +50,22 @@ public class MarketState
         var currentRunners = Lines.ToList();
         currentRunners.AddRange(runnersAdded.Runners.Select(r => new Runner(r.Id, r.Name, r.BackPrices, r.LayPrices)));
         Lines = currentRunners.ToArray();
+    }
+
+    public void Apply(MarketSuspended suspended)
+    {
+        Status = MarketStatus.Suspended;
+    }
+
+    public void Apply(MarketResumed resumed)
+    {
+        Status = MarketStatus.Opened;
+    }
+
+    public void Apply(MarketClosed closed)
+    {
+        Status = MarketStatus.Closed;
+        EndTime = closed.Date;
     }
 }
 

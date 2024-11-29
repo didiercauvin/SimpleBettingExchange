@@ -26,4 +26,19 @@ public static class MarketServices
                 [new Price(r.BackPrice.Price, r.BackPrice.Size)],
                 [new Price(r.LayPrice.Price, r.LayPrice.Size)])).ToArray());
     }
+
+    public static MarketSuspended Handle(SuspendMarketCommand command)
+    {
+        return new MarketSuspended(command.MarketId, command.Date);
+    }
+
+    public static MarketResumed Handle(ResumeMarketCommand command)
+    {
+        return new MarketResumed(command.MarketId, command.Date);
+    }
+
+    public static MarketClosed Handle(CloseMarketCommand command)
+    {
+        return new MarketClosed(command.MarketId, command.Date);
+    }
 }

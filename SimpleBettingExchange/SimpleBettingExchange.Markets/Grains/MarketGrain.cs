@@ -9,6 +9,9 @@ public interface IMarketGrain : IGrainWithGuidKey
     Task CreateMarket(CreateMarketCommand command);
     Task ChangeName(ChangeMarketNameCommand command);
     Task AddRunners(AddRunnersCommand command);
+    Task SuspendMarket(SuspendMarketCommand command);
+    Task ResumeMarket(ResumeMarketCommand command);
+    Task CloseMarket(CloseMarketCommand command);
     Task<MarketState> GetMarketState();
 }
 
@@ -42,6 +45,30 @@ public class MarketGrain : JournaledGrain<MarketState, IEvent>, IMarketGrain, IC
     }
 
     public Task AddRunners(AddRunnersCommand command)
+    {
+        var @event = MarketServices.Handle(command);
+
+        RaiseEvent(@event);
+        return ConfirmEvents();
+    }
+
+    public Task SuspendMarket(SuspendMarketCommand command)
+    {
+        var @event = MarketServices.Handle(command);
+
+        RaiseEvent(@event);
+        return ConfirmEvents();
+    }
+
+    public Task ResumeMarket(ResumeMarketCommand command)
+    {
+        var @event = MarketServices.Handle(command);
+
+        RaiseEvent(@event);
+        return ConfirmEvents();
+    }
+
+    public Task CloseMarket(CloseMarketCommand command)
     {
         var @event = MarketServices.Handle(command);
 

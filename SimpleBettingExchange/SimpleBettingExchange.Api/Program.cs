@@ -28,6 +28,9 @@ app.UseEndpoints(c => {
     c.UseCreateMarketEndpoint();
     c.UseChangeMarketNameEndpoint();
     c.UseAddRunnersEndpoint();
+    c.UseSuspendMarketEndpoint();
+    c.UseResumeMarketEndpoint();
+    c.UseCloseMarketEndpoint();
 });
 
 app.Run();

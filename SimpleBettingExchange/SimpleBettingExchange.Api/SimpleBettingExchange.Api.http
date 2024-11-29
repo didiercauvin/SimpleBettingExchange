@@ -15,7 +15,7 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:5163/api/markets/030d97ca-4c6a-4b60-9a71-b7c7e721da59/runners
+POST http://localhost:5163/api/markets/f75ea1ef-bc97-485e-a770-875d6956b817/runners
 Content-Type: application/json
 
 {
@@ -63,4 +63,31 @@ Content-Type: application/json
 
 {
   "name": "Match sur l'issue du match PSG / OM"
+}
+
+###
+
+POST http://localhost:5163/api/markets/f75ea1ef-bc97-485e-a770-875d6956b817/suspend
+Content-Type: application/json
+
+{
+  
+}
+
+###
+
+POST http://localhost:5163/api/markets/f75ea1ef-bc97-485e-a770-875d6956b817/resume
+Content-Type: application/json
+
+{
+  
+}
+
+###
+
+POST http://localhost:5163/api/markets/f75ea1ef-bc97-485e-a770-875d6956b817/close
+Content-Type: application/json
+
+{
+  
 }
