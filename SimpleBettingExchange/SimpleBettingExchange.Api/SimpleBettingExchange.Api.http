@@ -9,22 +9,58 @@ POST http://localhost:5163/api/markets
 Content-Type: application/json
 
 {
-  "name": "marché 1",
-  "lines": [
+  "name": "Match Odds PSG / OM",
+  "startTime": "29/11/2024 20:45:00"
+}
+
+###
+
+POST http://localhost:5163/api/markets/030d97ca-4c6a-4b60-9a71-b7c7e721da59/runners
+Content-Type: application/json
+
+{
+  "runners": [
     {
-      "name": "over 1.5"
+      "name": "Victoire du PSG",
+      "backPrice": {
+        "price": 1.5,
+        "size": 200
+      },
+      "layPrice": {
+        "price": 1.6,
+        "size": 150
+      }
     },
     {
-      "name": "under 1.5"
+      "name": "Match nul",
+      "backPrice": {
+        "price": 2.5,
+        "size": 250
+      },
+      "layPrice": {
+        "price": 2.6,
+        "size": 100
+      }
+    },
+    {
+      "name": "Victoire de Marseille",
+      "backPrice": {
+        "price": 5.5,
+        "size": 280
+      },
+      "layPrice": {
+        "price": 5.6,
+        "size": 300
+      }
     }
   ]
 }
 
 ###
 
-PUT http://localhost:5163/api/markets/ec4e95a4-5f08-4575-8420-a317545763aa
+PUT http://localhost:5163/api/markets/030d97ca-4c6a-4b60-9a71-b7c7e721da59
 Content-Type: application/json
 
 {
-  "name": "marché UHU"
+  "name": "Match sur l'issue du match PSG / OM"
 }

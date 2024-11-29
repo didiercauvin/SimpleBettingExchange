@@ -27,6 +27,7 @@ app.UseRouting();
 app.UseEndpoints(c => {
     c.UseCreateMarketEndpoint();
     c.UseChangeMarketNameEndpoint();
+    c.UseAddRunnersEndpoint();
 });
 
 app.Run();

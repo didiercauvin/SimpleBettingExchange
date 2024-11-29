@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.CodeAnalysis;
 using static Microsoft.AspNetCore.Http.TypedResults;
 
 namespace SimpleBettingExchange.Markets;
 
-public record CreateMarketRequest(string Name, CreateMarketLineRequest[] Lines);
+public record CreateMarketRequest(string Name, string StartTime);
 public record CreateMarketLineRequest(string Name);
 
 public static class CreateMarketEndPoint
@@ -19,7 +17,7 @@ public static class CreateMarketEndPoint
 
             var marketGrain = grainFactory.GetGrain<IMarketGrain>(marketId);
 
-            await marketGrain.CreateMarket(new CreateMarketCommand(marketId, body.Name, body.Lines.Select(l => new CreateMarketLineCommand(Guid.NewGuid(), l.Name)).ToArray()));
+            await marketGrain.CreateMarket(new CreateMarketCommand(marketId, body.Name, DateTimeOffset.Parse(body.StartTime)));
 
             return Created($"/api/markets/{marketId}", marketId);
         });
@@ -29,7 +27,7 @@ public static class CreateMarketEndPoint
 }
 
 [GenerateSerializer]
-public record CreateMarketCommand(Guid Id, string Name, CreateMarketLineCommand[] Lines);
+public record CreateMarketCommand(Guid Id, string Name, DateTimeOffset StartTime);
 
 [GenerateSerializer]
 public class CreateMarketLineCommand

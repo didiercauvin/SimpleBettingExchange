@@ -8,6 +8,7 @@ public interface IMarketGrain : IGrainWithGuidKey
 {
     Task CreateMarket(CreateMarketCommand command);
     Task ChangeName(ChangeMarketNameCommand command);
+    Task AddRunners(AddRunnersCommand command);
     Task<MarketState> GetMarketState();
 }
 
@@ -33,6 +34,14 @@ public class MarketGrain : JournaledGrain<MarketState, IEvent>, IMarketGrain, IC
     }
 
     public Task CreateMarket(CreateMarketCommand command)
+    {
+        var @event = MarketServices.Handle(command);
+
+        RaiseEvent(@event);
+        return ConfirmEvents();
+    }
+
+    public Task AddRunners(AddRunnersCommand command)
     {
         var @event = MarketServices.Handle(command);
 
