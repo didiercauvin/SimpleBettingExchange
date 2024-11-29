@@ -3,6 +3,8 @@
 public record MarketCreated(Guid Id, string Name, MarketLineState[] Lines, DateTimeOffset CreatedAt) : IEvent;
 public record MarketNameChanged(Guid Id, string Name) : IEvent;
 
+public enum MarketStatus { Created, Opened, Suspended, Closed }
+
 [GenerateSerializer]
 public class MarketState
 {
