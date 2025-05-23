@@ -24,13 +24,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseEndpoints(c => {
-    c.UseCreateMarketEndpoint();
-    c.UseChangeMarketNameEndpoint();
-    c.UseAddRunnersEndpoint();
-    c.UseSuspendMarketEndpoint();
-    c.UseResumeMarketEndpoint();
-    c.UseCloseMarketEndpoint();
-});
+app.UseCreateMarketEndpoint();
+app.UseChangeMarketNameEndpoint();
+app.UseAddRunnersEndpoint();
+app.UseSuspendMarketEndpoint();
+app.UseResumeMarketEndpoint();
+app.UseCloseMarketEndpoint();
+
 
 app.Run();

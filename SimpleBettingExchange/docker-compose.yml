@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  database:
+    image: 'postgres:latest'
+    ports:
+      - 15432:5432
+    networks:
+      - postgres-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_PASSWORD: example
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - 15433:80
+    depends_on:
+      - database
+    networks:
+      - postgres-network
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin/
+    environment:
+      PGADMIN_DEFAULT_PASSWORD: example
+      PGADMIN_DEFAULT_EMAIL: didier.cauvin@elap.io
+
+volumes:
+  postgres_data:
+  pgadmin-data:
+
+networks: 
+  postgres-network:
+    driver: bridge

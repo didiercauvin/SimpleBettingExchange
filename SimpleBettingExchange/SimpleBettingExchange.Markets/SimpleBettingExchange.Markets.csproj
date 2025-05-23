@@ -15,9 +15,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="Marten" Version="7.40.4" />
       <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="9.0.1" />
       <PackageReference Include="Microsoft.Orleans.EventSourcing" Version="9.0.1" />
       <PackageReference Include="Microsoft.Orleans.Sdk" Version="9.0.1" />
+      <PackageReference Include="WolverineFx.Http.Marten" Version="3.13.3" />
     </ItemGroup>
 
 </Project>
