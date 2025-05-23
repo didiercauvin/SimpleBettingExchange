@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Marten;
+using Microsoft.Extensions.Logging;
 using Orleans.EventSourcing;
 using Orleans.EventSourcing.CustomStorage;
 
@@ -6,6 +7,7 @@ namespace SimpleBettingExchange.Markets;
 
 public interface IMarketGrain : IGrainWithGuidKey
 {
+    Task Handle(MarketCreated @event);
     Task CreateMarket(CreateMarketCommand command);
     Task ChangeName(ChangeMarketNameCommand command);
     Task AddRunners(AddRunnersCommand command);
@@ -15,78 +17,114 @@ public interface IMarketGrain : IGrainWithGuidKey
     Task<MarketState> GetMarketState();
 }
 
-public class MarketGrain : JournaledGrain<MarketState, IEvent>, IMarketGrain, ICustomStorageInterface<MarketState, IEvent>
+public class MarketGrain : Grain<MarketState>, IMarketGrain
 {
-    private readonly IEventStore _eventStore;
+    private readonly IQuerySession _querySession;
     private readonly ILogger<MarketGrain> _logger;
     private string _streamId;
+    private MarketState _state = new();
 
-    public MarketGrain(IEventStore eventStore, ILogger<MarketGrain> logger)
+    public MarketGrain(IQuerySession querySession, ILogger<MarketGrain> logger)
     {
-        _eventStore = eventStore;
+        _querySession = querySession;
         _logger = logger;
     }
 
-    public override Task OnActivateAsync(CancellationToken cancellationToken)
+    public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
-        _streamId = $"Market-{this.GetPrimaryKey()}";
+        var streamId = this.GetPrimaryKey();
+        var events = await _querySession.Events.FetchStreamAsync(streamId);
 
-        Console.WriteLine($"Welcome _streamId {_streamId}!!");
+        foreach (var e in events)
+        {
+            Apply(e.Data);
+        }
 
-        return base.OnActivateAsync(cancellationToken);
+        await base.OnActivateAsync(cancellationToken);
+    }
+
+    private void Apply(object @event)
+    {
+        switch (@event)
+        {
+            case MarketCreated created:
+                _state.Name = created.Name;
+                _state.StartTime = created.StartTime;
+                break;
+                // autres événements...
+        }
+    }
+
+    public Task Handle(MarketCreated @event)
+    {
+        Apply(@event);
+        return WriteStateAsync();
     }
 
     public Task CreateMarket(CreateMarketCommand command)
     {
-        var @event = MarketServices.Handle(command);
+        //var @event = MarketServices.Handle(command);
 
-        RaiseEvent(@event);
-        return ConfirmEvents();
+        //RaiseEvent(@event);
+        //return ConfirmEvents();
+
+        return Task.CompletedTask;
     }
 
     public Task AddRunners(AddRunnersCommand command)
     {
-        var @event = MarketServices.Handle(command);
+        //var @event = MarketServices.Handle(command);
 
-        RaiseEvent(@event);
-        return ConfirmEvents();
+        //RaiseEvent(@event);
+        //return ConfirmEvents();
+
+        return Task.CompletedTask;
     }
 
     public Task SuspendMarket(SuspendMarketCommand command)
     {
-        var @event = MarketServices.Handle(command);
+        //var @event = MarketServices.Handle(command);
 
-        RaiseEvent(@event);
-        return ConfirmEvents();
+        //RaiseEvent(@event);
+        //return ConfirmEvents();
+
+        return Task.CompletedTask;
     }
 
     public Task ResumeMarket(ResumeMarketCommand command)
     {
-        var @event = MarketServices.Handle(command);
+        //var @event = MarketServices.Handle(command);
 
-        RaiseEvent(@event);
-        return ConfirmEvents();
+        //RaiseEvent(@event);
+        //return ConfirmEvents();
+
+        return Task.CompletedTask;
     }
 
     public Task CloseMarket(CloseMarketCommand command)
     {
-        var @event = MarketServices.Handle(command);
+        //var @event = MarketServices.Handle(command);
 
-        RaiseEvent(@event);
-        return ConfirmEvents();
+        //RaiseEvent(@event);
+        //return ConfirmEvents();
+
+        return Task.CompletedTask;
     }
 
     public Task ChangeName(ChangeMarketNameCommand command)
     {
-        var @event = MarketServices.Handle(command);
+        //var @event = MarketServices.Handle(command);
 
-        RaiseEvent(@event);
-        return ConfirmEvents();
+        //RaiseEvent(@event);
+        //return ConfirmEvents();
+
+        return Task.CompletedTask;
     }
 
-    private async Task<IEvent[]> LoadEvents()
+    private Task<IEvent[]> LoadEvents()
     {
-        return await _eventStore.LoadStreamAsync(_streamId);
+        return Task.FromResult(Array.Empty<IEvent>());
+        //return await _eventStore.LoadStreamAsync(_streamId);
     }
 
     public async Task<KeyValuePair<int, MarketState>> ReadStateFromStorage()
@@ -96,7 +134,7 @@ public class MarketGrain : JournaledGrain<MarketState, IEvent>, IMarketGrain, IC
 
         var events = await LoadEvents();
 
-        foreach(var @event in events)
+        foreach (var @event in events)
         {
             root.When(@event);
         }
@@ -104,7 +142,7 @@ public class MarketGrain : JournaledGrain<MarketState, IEvent>, IMarketGrain, IC
         return new KeyValuePair<int, MarketState>(0, root);
     }
 
-    public async Task<bool> ApplyUpdatesToStorage(IReadOnlyList<IEvent> updates, int expectedVersion)
+    public Task<bool> ApplyUpdatesToStorage(IReadOnlyList<IEvent> updates, int expectedVersion)
     {
         _logger.LogInformation("Applying Events for Aggregate {0}", GrainReference.GetPrimaryKey());
         //var version = await GetCurrentVersion();
@@ -115,8 +153,8 @@ public class MarketGrain : JournaledGrain<MarketState, IEvent>, IMarketGrain, IC
         //    throw new AccountTransactionException(
         //        $"Concurrency Exception Detected!");
         //}
-        await _eventStore.AppendToStreamAsync(_streamId, updates);
-        return true;
+        //await _eventStore.AppendToStreamAsync(_streamId, updates);
+        return Task.FromResult(true);
     }
 
     public Task<MarketState> GetMarketState()

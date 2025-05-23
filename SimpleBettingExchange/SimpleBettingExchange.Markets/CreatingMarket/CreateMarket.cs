@@ -1,5 +1,6 @@
 using Marten;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Wolverine.Http;
 using static Microsoft.AspNetCore.Http.TypedResults;
@@ -12,10 +13,19 @@ public record CreateMarketLineRequest(string Name);
 public static class CreateMarketEndPoint
 {
     [WolverinePost("/api/markets")]
-    public static MarketCreated Handle(CreateMarketCommand createMarket, IDocumentSession session)
+    public static async Task<MarketCreated> HandleAsync(CreateMarketCommand createMarket, IDocumentSession session, IGrainFactory grains)
     {
         var (id, name, lines) = createMarket;
-        return new MarketCreated(id, name, createMarket.StartTime, DateTimeOffset.Now);
+
+        var created = new MarketCreated(id, name, createMarket.StartTime, DateTimeOffset.Now);
+
+        var grain = grains.GetGrain<IMarketGrain>(id);
+        await grain.Handle(created);
+
+        session.Events.StartStream<MarketState>(id, created);
+        await session.SaveChangesAsync();
+
+        return created;
     }
 
     public static IEndpointRouteBuilder UseCreateMarketEndpoint(this IEndpointRouteBuilder endpoints)

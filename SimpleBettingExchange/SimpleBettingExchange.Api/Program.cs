@@ -56,12 +56,11 @@ builder.Host.UseOrleansClient(static builder =>
 {
     builder.UseLocalhostClustering();
 });
-
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddSingleton<IEventStore, InMemoryEventStore>();
+//builder.Services.AddSingleton<IEventStore, InMemoryEventStore>();
 //builder.Services.AddScoped<IMarketRepository, OrleansMarketRepository>();
 
 var app = builder.Build();
