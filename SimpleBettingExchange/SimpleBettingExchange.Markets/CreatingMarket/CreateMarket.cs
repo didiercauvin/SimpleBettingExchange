@@ -1,5 +1,7 @@
+using Marten;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Wolverine.Http;
 using static Microsoft.AspNetCore.Http.TypedResults;
 
 namespace SimpleBettingExchange.Markets;
@@ -9,6 +11,13 @@ public record CreateMarketLineRequest(string Name);
 
 public static class CreateMarketEndPoint
 {
+    [WolverinePost("/api/markets")]
+    public static MarketCreated Handle(CreateMarketCommand createMarket, IDocumentSession session)
+    {
+        var (id, name, lines) = createMarket;
+        return new MarketCreated(id, name, createMarket.StartTime, DateTimeOffset.Now);
+    }
+
     public static IEndpointRouteBuilder UseCreateMarketEndpoint(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapPost("/api/markets", async (CreateMarketRequest body, IGrainFactory grainFactory) =>
