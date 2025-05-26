@@ -1,0 +1,13 @@
+﻿POST http://localhost:5163/api/markets
+Content-Type: application/json
+
+{
+  "Name":  "Test-5",
+  "StartTime": "2025-05-26T11:00:00+02:00"
+}
+
+### GET request to example server
+GET http://localhost:5163/api/markets
+
+### GET request to example server
+GET http://localhost:5163/api/markets/619d88c4-b700-4ad5-aaf9-d00dff93abcd

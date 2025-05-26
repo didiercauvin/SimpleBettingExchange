@@ -24,7 +24,7 @@ services:
       - pgadmin-data:/var/lib/pgadmin/
     environment:
       PGADMIN_DEFAULT_PASSWORD: example
-      PGADMIN_DEFAULT_EMAIL: didier.cauvin@elap.io
+      PGADMIN_DEFAULT_EMAIL: didier.cauvin@gmail.com
 
 volumes:
   postgres_data:

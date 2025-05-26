@@ -1,62 +1,31 @@
 using Marten;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using Wolverine.Http;
-using static Microsoft.AspNetCore.Http.TypedResults;
+using static SimpleBettingExchange.Markets.MarketServices;
 
 namespace SimpleBettingExchange.Markets;
 
 public record CreateMarketRequest(string Name, string StartTime);
 public record CreateMarketLineRequest(string Name);
 
+public record MarketCreationResponse(Guid Id) : CreationResponse("/api/markets/" + Id);
+
+[GenerateSerializer]
+public record CreateMarketCommand(string Name, DateTimeOffset StartTime);
+
 public static class CreateMarketEndPoint
 {
     [WolverinePost("/api/markets")]
-    public static async Task<MarketCreated> HandleAsync(CreateMarketCommand createMarket, IDocumentSession session, IGrainFactory grains)
+    public static async Task<(MarketCreationResponse, MarketCreated)> HandleAsync(CreateMarketCommand createMarket, 
+        IDocumentSession session,
+        IGrainFactory grains)
     {
-        var (id, name, lines) = createMarket;
-
-        var created = new MarketCreated(id, name, createMarket.StartTime, DateTimeOffset.Now);
-
+        var id = Guid.NewGuid();
         var grain = grains.GetGrain<IMarketGrain>(id);
-        await grain.Handle(created);
-
-        session.Events.StartStream<MarketState>(id, created);
-        await session.SaveChangesAsync();
-
-        return created;
-    }
-
-    public static IEndpointRouteBuilder UseCreateMarketEndpoint(this IEndpointRouteBuilder endpoints)
-    {
-        endpoints.MapPost("/api/markets", async (CreateMarketRequest body, IGrainFactory grainFactory) =>
-        {
-            var marketId = Guid.NewGuid();
-
-            var marketGrain = grainFactory.GetGrain<IMarketGrain>(marketId);
-
-            await marketGrain.CreateMarket(new CreateMarketCommand(marketId, body.Name, DateTimeOffset.Parse(body.StartTime)));
-
-            return Created($"/api/markets/{marketId}", marketId);
-        });
+        var created = await grain.CreateMarket(createMarket.Name, createMarket.StartTime);
         
-        return endpoints;
+        return (
+            new MarketCreationResponse(created.Id),
+            created
+        );
     }
-}
-
-[GenerateSerializer]
-public record CreateMarketCommand(Guid Id, string Name, DateTimeOffset StartTime);
-
-[GenerateSerializer]
-public class CreateMarketLineCommand
-{
-    public CreateMarketLineCommand(Guid id, string name)
-    {
-        Id = id;
-        Name = name;
-    }
-
-    [Id(0)] public Guid Id { get; set; }
-    [Id(1)] public string Name { get; set; }
 }

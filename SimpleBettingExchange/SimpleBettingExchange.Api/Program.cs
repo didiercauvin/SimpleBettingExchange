@@ -1,8 +1,10 @@
+using System.Reflection;
 using Marten;
 using Marten.Events.Daemon.Resiliency;
-using SimpleBettingExchange.Markets;
+using Oakton;
 using Weasel.Core;
 using Wolverine;
+using Wolverine.Http;
 using Wolverine.Marten;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,12 +46,16 @@ builder.Host.UseWolverine(opts =>
     .AddAsyncDaemon(DaemonMode.Solo)
     .IntegrateWithWolverine();
 
-    opts.ApplicationAssembly = typeof(Program).Assembly;
-
+    opts.Discovery.IncludeAssembly(typeof(Program).Assembly);
+    opts.Discovery.IncludeAssembly(Assembly.Load("SimpleBettingExchange.Markets"));
+    
     // You want this maybe!
     opts.Policies.AutoApplyTransactions();
 
 });
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddWolverineHttp();
 
 
 builder.Host.UseOrleansClient(static builder =>
@@ -71,14 +77,15 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCreateMarketEndpoint();
-app.UseChangeMarketNameEndpoint();
-app.UseAddRunnersEndpoint();
-app.UseSuspendMarketEndpoint();
-app.UseResumeMarketEndpoint();
-app.UseCloseMarketEndpoint();
+app.MapWolverineEndpoints();
+// app.UseCreateMarketEndpoint();
+// app.UseChangeMarketNameEndpoint();
+// app.UseAddRunnersEndpoint();
+// app.UseSuspendMarketEndpoint();
+// app.UseResumeMarketEndpoint();
+// app.UseCloseMarketEndpoint();
 
 
-app.Run();
+return await app.RunOaktonCommands(args);

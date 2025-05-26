@@ -7,7 +7,8 @@ public static class MarketServices
 {
     public static MarketCreated Handle(CreateMarketCommand createMarket)
     {
-        var (id, name, lines) = createMarket;
+        var id = Guid.NewGuid();
+        var (name, lines) = createMarket;
         return new MarketCreated(id, name, createMarket.StartTime, DateTimeOffset.Now);
     }
 
