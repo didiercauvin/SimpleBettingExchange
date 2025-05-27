@@ -33,14 +33,6 @@ public class MarketGrain : Grain<Market>, IMarketGrain
         _streamId = this.GetPrimaryKey();
         
         _state = await _documentSession.Events.AggregateStreamAsync<Market>(_streamId);
-        
-        // var stream = await _querySession.Events.FetchStreamAsync(streamId);
-        // var events = await _querySession.Events.FetchStreamAsync(stream);
-        //
-        // foreach (var e in events)
-        // {
-        //     Apply(e.Data);
-        // }
 
         await base.OnActivateAsync(cancellationToken);
     }
@@ -52,7 +44,7 @@ public class MarketGrain : Grain<Market>, IMarketGrain
         await _documentSession.SaveChangesAsync();
 
         _state = Market.None;
-        _state.Apply(@event);
+        Market.When(_state, @event);
         
         return @event;
     }

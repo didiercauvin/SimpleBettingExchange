@@ -28,40 +28,40 @@ public class Market
 
     public static Market None => new();
 
-    // public static Market When(Market state, IEvent @event)
-    // {
-    //     return @event switch
-    //     {
-    //         MarketCreated created => Apply(state, created),
-    //         _ => throw new ArgumentException("Unknown type of event", nameof(@event))
-    //         // case MarketNameChanged nameChanged: Apply(nameChanged); break;
-    //         // case MarketRunnersAdded runnersAdded: Apply(runnersAdded); break;
-    //         // case MarketSuspended suspended: Apply(suspended); break;
-    //         // case MarketResumed resumed: Apply(resumed); break;
-    //         // case MarketClosed closed: Apply(closed); break;
-    //     };
-    // }
-
-    // private static Market Apply(Market state, MarketCreated created)
-    // {
-    //     state.Id = created.Id;
-    //     state.Name = created.Name;
-    //     state.Status = MarketStatus.Created;
-    //     state.StartTime = created.StartTime;
-    //
-    //     return state;
-    // }
-
-    public Market Apply(MarketCreated created)
+    public static Market When(Market state, IEvent @event)
     {
-        return new Market()
+        return @event switch
         {
-            Id = created.Id,
-            Name = created.Name,
-            Status = MarketStatus.Created,
-            StartTime = created.StartTime,
+            MarketCreated created => state.Apply(created),
+            _ => throw new ArgumentException("Unknown type of event", nameof(@event))
+            // case MarketNameChanged nameChanged: Apply(nameChanged); break;
+            // case MarketRunnersAdded runnersAdded: Apply(runnersAdded); break;
+            // case MarketSuspended suspended: Apply(suspended); break;
+            // case MarketResumed resumed: Apply(resumed); break;
+            // case MarketClosed closed: Apply(closed); break;
         };
     }
+
+    private Market Apply(MarketCreated created)
+    {
+        Id = created.Id;
+        Name = created.Name;
+        Status = MarketStatus.Created;
+        StartTime = created.StartTime;
+
+        return this;
+    }
+
+    // private static Market Apply(MarketCreated created)
+    // {
+    //     return new Market()
+    //     {
+    //         Id = created.Id,
+    //         Name = created.Name,
+    //         Status = MarketStatus.Created,
+    //         StartTime = created.StartTime,
+    //     };
+    // }
 
     // public void Apply(MarketNameChanged nameChanged)
     // {

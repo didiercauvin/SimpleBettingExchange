@@ -1,5 +1,7 @@
 ﻿using Marten;
+using Marten.Events;
 using Marten.Events.Daemon.Resiliency;
+using Marten.Events.Projections;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -36,8 +38,12 @@ using var host = Host.CreateDefaultBuilder(args)
                     options.AutoCreateSchemaObjects = AutoCreate.All;
                 }
 
-                // Ajouter ici les projections si tu en as besoin :
-                // options.Projections.Add<PariProjection>(ProjectionLifecycle.Inline);
+                options.Events.StreamIdentity = StreamIdentity.AsGuid; // Utilise GUID pour les streams
+    
+                // options.Schema.For<MarketSummary>()
+                //     .Identity(x => x.Id); // Et GUID pour les documents
+    
+                // options.Projections.Add<MarketListProjection>(ProjectionLifecycle.Async);
             })
             .ApplyAllDatabaseChangesOnStartup()
             .AddAsyncDaemon(DaemonMode.Solo);

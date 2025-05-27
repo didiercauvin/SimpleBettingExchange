@@ -2,6 +2,7 @@ using System.Reflection;
 using Marten;
 using Marten.Events.Daemon.Resiliency;
 using Oakton;
+using SimpleBettingExchange.Markets;
 using Weasel.Core;
 using Wolverine;
 using Wolverine.Http;
@@ -29,7 +30,8 @@ builder.Host.UseWolverine(opts =>
         {
             options.AutoCreateSchemaObjects = AutoCreate.All;
         }
-
+        
+        // options.Schema.For<MarketSummary>();
 
         //options.DisableNpgsqlLogging = true;
         //options.Projections.LiveStreamAggregation<Pari>();
@@ -43,7 +45,6 @@ builder.Host.UseWolverine(opts =>
     })
     .UseLightweightSessions()
     .ApplyAllDatabaseChangesOnStartup()
-    .AddAsyncDaemon(DaemonMode.Solo)
     .IntegrateWithWolverine();
 
     opts.Discovery.IncludeAssembly(typeof(Program).Assembly);
