@@ -2,12 +2,12 @@
 Content-Type: application/json
 
 {
-  "Name":  "Test-668",
-  "StartTime": "2025-05-27T11:00:00+02:00"
+  "Name":  "Test-670",
+  "StartTime": "2025-05-27T13:00:00+02:00"
 }
 
 ### GET request to example server
 GET http://localhost:5163/api/markets
 
 ### GET request to example server
-GET http://localhost:5163/api/markets/d3fb70c5-f976-43f0-8def-b6341732812a
+GET http://localhost:5163/api/markets/4cea22b6-4551-49ae-9a33-49df7f792e76

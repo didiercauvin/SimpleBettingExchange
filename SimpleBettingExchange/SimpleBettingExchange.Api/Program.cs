@@ -58,6 +58,8 @@ builder.Host.UseWolverine(opts =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddWolverineHttp();
 
+builder.Services.AddTransient<PersistMarket>();
+builder.Services.AddTransient<PeristsMarketToDatabase>(sp => sp.GetService<PersistMarket>().Persist);
 
 builder.Host.UseOrleansClient(static builder =>
 {

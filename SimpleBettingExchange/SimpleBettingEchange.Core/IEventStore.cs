@@ -2,7 +2,6 @@
 
 public interface IEvent
 {
-    
 }
 
 // public interface IEventStore

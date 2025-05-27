@@ -12,16 +12,17 @@ public record MarketCreationResponse(Guid Id) : CreationResponse("/api/markets/"
 [GenerateSerializer]
 public record CreateMarketCommand(string Name, DateTimeOffset StartTime);
 
+public delegate Task PeristsMarketToDatabase(Guid id, IEvent created);
+
 public static class CreateMarketEndPoint
 {
     [WolverinePost("/api/markets")]
     public static async Task<(MarketCreationResponse, MarketCreated)> HandleAsync(CreateMarketCommand createMarket, 
-        IDocumentSession session,
-        IGrainFactory grains)
+        PeristsMarketToDatabase persistMarketToDatabase)
     {
-        var id = Guid.NewGuid();
-        var grain = grains.GetGrain<IMarketGrain>(id);
-        var created = await grain.CreateMarket(createMarket.Name, createMarket.StartTime);
+        var created = Handle(createMarket);
+        
+        await persistMarketToDatabase(created.Id, created);
         
         return (
             new MarketCreationResponse(created.Id),

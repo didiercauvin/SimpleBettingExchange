@@ -12,7 +12,7 @@ public static class MarketServices
         return new MarketCreated(id, name, createMarket.StartTime, DateTimeOffset.Now);
     }
 
-    public static MarketNameChanged Handle(ChangeMarketNameCommand changeMarketName)
+    public static MarketNameChanged Handle(Market market, ChangeMarketNameCommand changeMarketName)
     {
         return new MarketNameChanged(changeMarketName.Id, changeMarketName.Name);
     }
