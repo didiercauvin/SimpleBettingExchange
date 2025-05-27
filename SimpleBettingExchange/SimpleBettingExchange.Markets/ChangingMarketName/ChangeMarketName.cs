@@ -18,11 +18,11 @@ public static class ChangeMarketNameEndPoint
     public static async Task<MarketNameChanged> ChangeMarketName(Guid marketId, ChangeMarketNameCommand changeMarketName,
         IPersistMarket peristsMarketToDatabase)
     {
-        var @event = await peristsMarketToDatabase.GetAndUpdate(
+        var @event = await peristsMarketToDatabase.GetAndUpdate<MarketNameChanged>(
             marketId, 
             market => Handle(market, changeMarketName)
         );
         
-        return @event as MarketNameChanged;
+        return @event;
     }
 }

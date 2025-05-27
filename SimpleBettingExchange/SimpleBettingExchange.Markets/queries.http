@@ -2,19 +2,19 @@
 Content-Type: application/json
 
 {
-  "Name":  "Test-xxx",
-  "StartTime": "2025-05-27T16:00:00+02:00"
+  "Name":  "Test-toto",
+  "StartTime": "2025-05-27T18:00:00+02:00"
 }
 
 ### GET request to example server
 GET http://localhost:5163/api/markets
 
 ### GET request to example server
-GET http://localhost:5163/api/markets/e721dfa1-8b14-4cb0-8f8c-68e4ab63d1c2
+GET http://localhost:5163/api/markets/47329bcc-305b-443b-aa70-e13a140d74ae
 
 ### Post change market name
 
-PUT http://localhost:5163/api/markets/e721dfa1-8b14-4cb0-8f8c-68e4ab63d1c2
+PUT http://localhost:5163/api/markets/47329bcc-305b-443b-aa70-e13a140d74ae
 Content-Type: application/json
 
 {

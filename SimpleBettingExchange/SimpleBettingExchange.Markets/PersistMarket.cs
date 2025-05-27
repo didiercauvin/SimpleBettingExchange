@@ -4,7 +4,7 @@ public interface IPersistMarket
 {
     Task<TEvent> Persist<TEvent>(Guid id, Func<Guid, TEvent> handler) where TEvent : IEvent;
     Task<Market> GetMarketById(Guid id);
-    Task<IEvent> GetAndUpdate(Guid id, Func<Market, IEvent> handler);
+    Task<TEvent> GetAndUpdate<TEvent>(Guid id, Func<Market, TEvent> handler) where TEvent : IEvent;
 }
 
 public class PersistMarket : IPersistMarket
@@ -21,6 +21,24 @@ public class PersistMarket : IPersistMarket
         var @event = handler(id);
         
         return Persist(id, @event);
+    }
+
+    public async Task<TEvent> GetAndUpdate<TEvent>(Guid id, Func<Market, TEvent> handler) where TEvent : IEvent
+    {
+        var market = await GetMarketById(id);
+        var @event = handler(market);
+        
+        await Persist(id, @event);
+        
+        return @event;
+    }
+
+    public async Task<Market> GetMarketById(Guid id)
+    {
+        var grain = _grains.GetGrain<IMarketGrain>(id);
+        
+        var state = await grain.GetMarketState();
+        return state.ToMarket();
     }
     
     private async Task<TEvent> Persist<TEvent>(Guid id, TEvent @event) where TEvent : IEvent
@@ -39,24 +57,6 @@ public class PersistMarket : IPersistMarket
         await grain.Handle(new MarketStateCreated(created.Id, created.Name, created.StartTime, created.CreatedAt));
 
         return created;
-    }
-
-    public async Task<Market> GetMarketById(Guid id)
-    {
-        var grain = _grains.GetGrain<IMarketGrain>(id);
-        
-        var state = await grain.GetMarketState();
-        return state.ToMarket();
-    }
-
-    public async Task<IEvent> GetAndUpdate(Guid id, Func<Market, IEvent> handler)
-    {
-        var market = await GetMarketById(id);
-        var @event = handler(market);
-        
-        await Persist(id, @event);
-        
-        return @event;
     }
 
     private async Task<IEvent> Handle(Guid id, MarketNameChanged @event)

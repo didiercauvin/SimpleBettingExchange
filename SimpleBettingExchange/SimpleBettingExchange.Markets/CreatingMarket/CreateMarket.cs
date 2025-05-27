@@ -19,7 +19,7 @@ public static class CreateMarketEndPoint
     {
         var id = Guid.NewGuid();
         
-        var created = await persistMarketToDatabase.Persist(id, id => Handle(id, createMarket)) as MarketCreated;
+        var created = await persistMarketToDatabase.Persist<MarketCreated>(id, id => Handle(id, createMarket));
         
         return (
             new MarketCreationResponse(created.Id),
