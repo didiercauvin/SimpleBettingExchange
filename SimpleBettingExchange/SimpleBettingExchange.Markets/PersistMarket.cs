@@ -2,7 +2,7 @@
 
 public interface IPersistMarket
 {
-    Task<IEvent> Persist(Guid id, Func<Guid, IEvent> handler);
+    Task<TEvent> Persist<TEvent>(Guid id, Func<Guid, TEvent> handler) where TEvent : IEvent;
     Task<Market> GetMarketById(Guid id);
     Task<IEvent> GetAndUpdate(Guid id, Func<Market, IEvent> handler);
 }
@@ -16,21 +16,29 @@ public class PersistMarket : IPersistMarket
         _grains = grains;
     }
     
-    public Task<IEvent> Persist(Guid id, Func<Guid, IEvent> handler)
+    public Task<TEvent> Persist<TEvent>(Guid id, Func<Guid, TEvent> handler) where TEvent : IEvent
     {
         var @event = handler(id);
         
         return Persist(id, @event);
     }
     
-    private Task<IEvent> Persist(Guid id, IEvent @event)
+    private async Task<TEvent> Persist<TEvent>(Guid id, TEvent @event) where TEvent : IEvent
     {
         return @event switch
         {
-            MarketCreated created => Handle(id, created),
-            MarketNameChanged nameChanged => Handle(id, nameChanged),
+            MarketCreated created => (TEvent)(IEvent)(await Handle(id, created)),
+            MarketNameChanged nameChanged => (TEvent)(IEvent)(await Handle(id, nameChanged)),
             _ => throw new ArgumentException("Unknown type of event", nameof(@event)),
         };
+    }
+
+    private async Task<MarketCreated> Handle(Guid id, MarketCreated created)
+    {
+        var grain = _grains.GetGrain<IMarketGrain>(id);
+        await grain.Handle(new MarketStateCreated(created.Id, created.Name, created.StartTime, created.CreatedAt));
+
+        return created;
     }
 
     public async Task<Market> GetMarketById(Guid id)
@@ -49,14 +57,6 @@ public class PersistMarket : IPersistMarket
         await Persist(id, @event);
         
         return @event;
-    }
-
-    private async Task<IEvent> Handle(Guid id, MarketCreated created)
-    {
-        var grain = _grains.GetGrain<IMarketGrain>(id);
-        await grain.Handle(new MarketStateCreated(created.Id, created.Name, created.StartTime, created.CreatedAt));
-
-        return created;
     }
 
     private async Task<IEvent> Handle(Guid id, MarketNameChanged @event)
