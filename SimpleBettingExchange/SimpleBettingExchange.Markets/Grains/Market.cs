@@ -3,6 +3,9 @@
 [GenerateSerializer]
 public record MarketStateCreated(Guid Id, string Name, DateTimeOffset StartTime, DateTimeOffset CreatedAt);
 
+[GenerateSerializer]
+public record MarketStateNameChanged(Guid Id, string Name);
+
 public record MarketCreated(Guid Id, string Name, DateTimeOffset StartTime, DateTimeOffset CreatedAt) : IEvent;
 public record MarketNameChanged(Guid Id, string Name) : IEvent;
 public record MarketRunnersAdded(Guid MarketId, Runner[] Runners) : IEvent;
@@ -33,6 +36,7 @@ public class Market
         return @event switch
         {
             MarketCreated created => state.Apply(created),
+            MarketNameChanged nameChanged => state.Apply(nameChanged),
             _ => throw new ArgumentException("Unknown type of event", nameof(@event))
             // case MarketNameChanged nameChanged: Apply(nameChanged); break;
             // case MarketRunnersAdded runnersAdded: Apply(runnersAdded); break;
@@ -52,6 +56,13 @@ public class Market
         return this;
     }
 
+    private Market Apply(MarketNameChanged nameChanged)
+    {
+        Name = nameChanged.Name;
+        
+        return this;
+    }
+
     // private static Market Apply(MarketCreated created)
     // {
     //     return new Market()
@@ -61,11 +72,6 @@ public class Market
     //         Status = MarketStatus.Created,
     //         StartTime = created.StartTime,
     //     };
-    // }
-
-    // public void Apply(MarketNameChanged nameChanged)
-    // {
-    //     Name = nameChanged.Name;
     // }
     //
     // public void Apply(MarketRunnersAdded runnersAdded)

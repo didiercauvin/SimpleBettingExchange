@@ -11,3 +11,12 @@ GET http://localhost:5163/api/markets
 
 ### GET request to example server
 GET http://localhost:5163/api/markets/4cea22b6-4551-49ae-9a33-49df7f792e76
+
+### Post change market name
+
+PUT http://localhost:5163/api/markets/4cea22b6-4551-49ae-9a33-49df7f792e76
+Content-Type: application/json
+
+{
+  "Name":  "Un nom pourri"
+}

@@ -8,7 +8,7 @@ namespace SimpleBettingExchange.Markets;
 public interface IMarketGrain : IGrainWithGuidKey
 {
     Task Handle(MarketStateCreated @event);
-    Task ChangeName(ChangeMarketNameCommand command);
+    Task Handle(MarketStateNameChanged @event);
     Task AddRunners(AddRunnersCommand command);
     Task SuspendMarket(SuspendMarketCommand command);
     Task ResumeMarket(ResumeMarketCommand command);
@@ -48,6 +48,15 @@ public class MarketGrain : Grain<MarketState>, IMarketGrain
         _state = Market.When(Market.None, @event).ToState();
     }
 
+    public async Task Handle(MarketStateNameChanged changed)
+    {
+        var @event = new MarketNameChanged(changed.Id, changed.Name);
+        _documentSession.Events.Append(_streamId, @event);
+        await _documentSession.SaveChangesAsync();
+
+        _state = Market.When(_state.ToMarket(), @event).ToState();
+    }
+
     public Task AddRunners(AddRunnersCommand command)
     {
         //var @event = MarketServices.Handle(command);
@@ -79,16 +88,6 @@ public class MarketGrain : Grain<MarketState>, IMarketGrain
     }
 
     public Task CloseMarket(CloseMarketCommand command)
-    {
-        //var @event = MarketServices.Handle(command);
-
-        //RaiseEvent(@event);
-        //return ConfirmEvents();
-
-        return Task.CompletedTask;
-    }
-
-    public Task ChangeName(ChangeMarketNameCommand command)
     {
         //var @event = MarketServices.Handle(command);
 

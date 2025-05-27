@@ -1,24 +1,30 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Wolverine.Http;
+using static SimpleBettingExchange.Markets.MarketServices;
 
 namespace SimpleBettingExchange.Markets;
 
 public record ChangeMarketNameRequest(string Name);
+public record ChangeMarketNameResponse(Guid Id) : CreationResponse("/api/markets/" + Id);
 
-[GenerateSerializer]
 public record ChangeMarketNameCommand(Guid Id, string Name);
+
+public delegate Task<Market> GetMarketById(Guid id);
 
 public static class ChangeMarketNameEndPoint
 {
-    public static IEndpointRouteBuilder UseChangeMarketNameEndpoint(this IEndpointRouteBuilder endpoints)
+    [WolverinePut("/api/markets/{marketId:Guid}"), EmptyResponse]
+    public static async Task<MarketNameChanged> ChangeMarketName(Guid marketId, ChangeMarketNameCommand changeMarketName,
+        GetMarketById  getMarketById,
+        PeristsMarketToDatabase peristsMarketToDatabase)
     {
-        endpoints.MapPut("/api/markets/{marketId:Guid}", async (Guid marketId, ChangeMarketNameRequest request,IGrainFactory grainFactory) =>
-        {
-            var marketGrain = grainFactory.GetGrain<IMarketGrain>(marketId);
-
-            await marketGrain.ChangeName(new ChangeMarketNameCommand(marketId, request.Name));
-        });
-
-        return endpoints;
+        var market = await getMarketById(marketId);
+        
+        var @event =  Handle(market, changeMarketName);
+        
+        await peristsMarketToDatabase(market.Id, @event);
+        
+        return @event;
     }
 }

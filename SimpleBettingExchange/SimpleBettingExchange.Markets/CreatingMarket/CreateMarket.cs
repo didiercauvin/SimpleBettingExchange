@@ -9,7 +9,6 @@ public record CreateMarketLineRequest(string Name);
 
 public record MarketCreationResponse(Guid Id) : CreationResponse("/api/markets/" + Id);
 
-[GenerateSerializer]
 public record CreateMarketCommand(string Name, DateTimeOffset StartTime);
 
 public delegate Task PeristsMarketToDatabase(Guid id, IEvent created);
