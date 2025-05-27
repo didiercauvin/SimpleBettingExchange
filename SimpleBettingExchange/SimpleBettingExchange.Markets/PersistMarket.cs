@@ -1,6 +1,13 @@
 ﻿namespace SimpleBettingExchange.Markets;
 
-public class PersistMarket
+public interface IPersistMarket
+{
+    Task<IEvent> Persist(Guid id, Func<Guid, IEvent> handler);
+    Task<Market> GetMarketById(Guid id);
+    Task<IEvent> GetAndUpdate(Guid id, Func<Market, IEvent> handler);
+}
+
+public class PersistMarket : IPersistMarket
 {
     private readonly IGrainFactory _grains;
 
@@ -9,7 +16,14 @@ public class PersistMarket
         _grains = grains;
     }
     
-    public Task Persist(Guid id, IEvent @event)
+    public Task<IEvent> Persist(Guid id, Func<Guid, IEvent> handler)
+    {
+        var @event = handler(id);
+        
+        return Persist(id, @event);
+    }
+    
+    private Task<IEvent> Persist(Guid id, IEvent @event)
     {
         return @event switch
         {
@@ -27,15 +41,29 @@ public class PersistMarket
         return state.ToMarket();
     }
 
-    private async Task Handle(Guid id, MarketCreated created)
+    public async Task<IEvent> GetAndUpdate(Guid id, Func<Market, IEvent> handler)
+    {
+        var market = await GetMarketById(id);
+        var @event = handler(market);
+        
+        await Persist(id, @event);
+        
+        return @event;
+    }
+
+    private async Task<IEvent> Handle(Guid id, MarketCreated created)
     {
         var grain = _grains.GetGrain<IMarketGrain>(id);
         await grain.Handle(new MarketStateCreated(created.Id, created.Name, created.StartTime, created.CreatedAt));
+
+        return created;
     }
 
-    private async Task Handle(Guid id, MarketNameChanged @event)
+    private async Task<IEvent> Handle(Guid id, MarketNameChanged @event)
     {
         var grain = _grains.GetGrain<IMarketGrain>(id);
         await grain.Handle(new MarketStateNameChanged(@event.Id, @event.Name));
+
+        return @event;
     }
 }

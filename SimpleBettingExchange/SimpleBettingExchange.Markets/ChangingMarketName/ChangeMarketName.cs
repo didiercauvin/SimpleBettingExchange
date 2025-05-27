@@ -16,15 +16,13 @@ public static class ChangeMarketNameEndPoint
 {
     [WolverinePut("/api/markets/{marketId:Guid}"), EmptyResponse]
     public static async Task<MarketNameChanged> ChangeMarketName(Guid marketId, ChangeMarketNameCommand changeMarketName,
-        GetMarketById  getMarketById,
-        PeristsMarketToDatabase peristsMarketToDatabase)
+        IPersistMarket peristsMarketToDatabase)
     {
-        var market = await getMarketById(marketId);
+        var @event = await peristsMarketToDatabase.GetAndUpdate(
+            marketId, 
+            market => Handle(market, changeMarketName)
+        );
         
-        var @event =  Handle(market, changeMarketName);
-        
-        await peristsMarketToDatabase(market.Id, @event);
-        
-        return @event;
+        return @event as MarketNameChanged;
     }
 }

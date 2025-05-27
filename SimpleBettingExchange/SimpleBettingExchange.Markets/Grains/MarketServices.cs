@@ -5,9 +5,8 @@ namespace SimpleBettingExchange.Markets;
 
 public static class MarketServices
 {
-    public static MarketCreated Handle(CreateMarketCommand createMarket)
+    public static MarketCreated Handle(Guid id, CreateMarketCommand createMarket)
     {
-        var id = Guid.NewGuid();
         var (name, lines) = createMarket;
         return new MarketCreated(id, name, createMarket.StartTime, DateTimeOffset.Now);
     }
