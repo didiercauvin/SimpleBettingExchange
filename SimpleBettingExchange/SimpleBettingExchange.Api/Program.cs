@@ -2,7 +2,6 @@ using System.Reflection;
 using Marten;
 using Marten.Events.Daemon.Resiliency;
 using Oakton;
-using SimpleBettingEchange.Markets.Contracts;
 using SimpleBettingExchange.Markets;
 using Weasel.Core;
 using Wolverine;
@@ -58,9 +57,6 @@ builder.Host.UseWolverine(opts =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddWolverineHttp();
-
-builder.Services.AddTransient<IPersistMarket, PersistMarket>();
-builder.Services.AddTransient<IPlaceBetService, PlaceBetService>();
 
 builder.Host.UseOrleansClient(static builder =>
 {

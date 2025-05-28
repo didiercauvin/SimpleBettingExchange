@@ -2,39 +2,57 @@
 
 namespace SimpleBettingExchange.Markets;
 
+[GenerateSerializer]
 public record MarketCreated(Guid Id, string EventName, string Name, DateTimeOffset StartTime, DateTimeOffset CreatedAt) : IEvent;
+[GenerateSerializer]
 public record MarketNameChanged(Guid Id, string Name) : IEvent;
+[GenerateSerializer]
 public record MarketRunnersAdded(Guid MarketId, RunnerSnapshot[] Runners) : IEvent;
+[GenerateSerializer]
 public record RunnerSnapshot(Guid RunnerId, string Name, PriceSnapshot BackPrice, PriceSnapshot LayPrice);
+[GenerateSerializer]
 public record PriceSnapshot(decimal Price, decimal Size);
 
 public interface IBackBetEvent : IEvent
 {
     
 }
+[GenerateSerializer]
 public record BackBetPlaced() : IBackBetEvent;
+[GenerateSerializer]
 public record BackBetRejected() : IBackBetEvent;
 
-
+[GenerateSerializer]
 public record MarketSuspended(Guid MarketId, DateTimeOffset Date) : IEvent;
+[GenerateSerializer]
 public record MarketResumed(Guid MarketId, DateTimeOffset Date) : IEvent;
+[GenerateSerializer]
 public record MarketClosed(Guid MarkerId, DateTimeOffset Date) : IEvent;
 
 public enum MarketStatus { Created, Opened, Suspended, Closed }
 
+[GenerateSerializer]
 public class Market
 {
+    [Id(0)]
     public Guid Id { get; set; }
+    
+    [Id(1)]
     public string EventName { get; set; }
-
+    
+    [Id(2)]
     public string Name { get; set; }
-
+    
+    [Id(3)]
     public MarketStatus Status { get; set; }
-
+    
+    [Id(4)]
     public DateTimeOffset StartTime { get; set; }
-
+    
+    [Id(5)]
     public DateTimeOffset? EndTime { get; set; }
 
+    [Id(6)]
     public Runner[] Lines { get; set; } = [];
 
     public static Market None => new();
@@ -110,13 +128,19 @@ public class Market
     // }
 }
 
+[GenerateSerializer]
 public class Runner(Guid id, string name, Price[] backPrices, Price[] layPrices)
 {
+    [Id(0)]
     public Guid Id { get; } = id;
+    [Id(1)]
     public string Name { get; } = name;
 
+    [Id(2)]
     public Price[] BackPrices { get;  } = backPrices;
+    [Id(3)]
     public Price[] LayPrices { get; set; } = layPrices;
 }
 
+[GenerateSerializer]
 public record Price(decimal PriceValue, decimal Size);
