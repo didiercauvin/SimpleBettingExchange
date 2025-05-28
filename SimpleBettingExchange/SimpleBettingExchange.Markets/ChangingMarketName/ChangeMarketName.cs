@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Wolverine.Http;
-using static SimpleBettingExchange.Markets.MarketServices;
 
 namespace SimpleBettingExchange.Markets;
 
@@ -24,5 +23,10 @@ public static class ChangeMarketNameEndPoint
         );
         
         return @event;
+    }
+
+    private static MarketNameChanged Handle(Market market, ChangeMarketNameCommand changeMarketName)
+    {
+        return new MarketNameChanged(changeMarketName.Id, changeMarketName.Name);
     }
 }

@@ -47,6 +47,7 @@ public class PersistMarket : IPersistMarket
         {
             MarketCreated created => (TEvent)(IEvent)(await Handle(id, created)),
             MarketNameChanged nameChanged => (TEvent)(IEvent)(await Handle(id, nameChanged)),
+            MarketRunnersAdded runnersAdded => (TEvent)(IEvent)(await Handle(id, runnersAdded)),
             _ => throw new ArgumentException("Unknown type of event", nameof(@event)),
         };
     }
@@ -54,7 +55,7 @@ public class PersistMarket : IPersistMarket
     private async Task<MarketCreated> Handle(Guid id, MarketCreated created)
     {
         var grain = _grains.GetGrain<IMarketGrain>(id);
-        await grain.Handle(new MarketStateCreated(created.Id, created.Name, created.StartTime, created.CreatedAt));
+        await grain.Handle(new MarketStateCreated(created.Id, created.EventName, created.Name, created.StartTime, created.CreatedAt));
 
         return created;
     }
@@ -65,5 +66,21 @@ public class PersistMarket : IPersistMarket
         await grain.Handle(new MarketStateNameChanged(@event.Id, @event.Name));
 
         return @event;
+    }
+
+    private async Task<IEvent> Handle(Guid id, MarketRunnersAdded runnersAdded)
+    {
+        var @event = new MarketStateRunnersAdded(
+            runnersAdded.MarketId, 
+            runnersAdded.Runners.Select(r => new RunnerStateSnapshot(
+                r.RunnerId,
+                r.Name,
+                new PriceStateSnapshot(r.BackPrice.Price, r.BackPrice.Size),
+                new PriceStateSnapshot(r.LayPrice.Price, r.LayPrice.Size))).ToArray());
+        
+        var grain = _grains.GetGrain<IMarketGrain>(id);
+        await grain.Handle(@event);
+
+        return runnersAdded;
     }
 }

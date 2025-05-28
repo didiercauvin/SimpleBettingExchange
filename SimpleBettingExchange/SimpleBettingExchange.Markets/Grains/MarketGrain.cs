@@ -9,7 +9,7 @@ public interface IMarketGrain : IGrainWithGuidKey
 {
     Task Handle(MarketStateCreated @event);
     Task Handle(MarketStateNameChanged @event);
-    Task AddRunners(AddRunnersCommand command);
+    Task Handle(MarketStateRunnersAdded @event);
     Task SuspendMarket(SuspendMarketCommand command);
     Task ResumeMarket(ResumeMarketCommand command);
     Task CloseMarket(CloseMarketCommand command);
@@ -41,7 +41,7 @@ public class MarketGrain : Grain<MarketState>, IMarketGrain
 
     public async Task Handle(MarketStateCreated created)
     {
-        var @event = new MarketCreated(created.Id, created.Name, created.StartTime, created.CreatedAt);
+        var @event = new MarketCreated(created.Id, created.EventName, created.Name, created.StartTime, created.CreatedAt);
         _documentSession.Events.StartStream<Market>(_streamId, @event);
         await _documentSession.SaveChangesAsync();
 
@@ -57,14 +57,20 @@ public class MarketGrain : Grain<MarketState>, IMarketGrain
         _state = Market.When(_state.ToMarket(), @event).ToState();
     }
 
-    public Task AddRunners(AddRunnersCommand command)
+    public async Task Handle(MarketStateRunnersAdded runnersAdded)
     {
-        //var @event = MarketServices.Handle(command);
+        var @event = new MarketRunnersAdded(
+            runnersAdded.MarketId, 
+            runnersAdded.Runners.Select(r => new RunnerSnapshot(
+                r.RunnerId,
+                r.Name,
+                new PriceSnapshot(r.BackPrice.Price, r.BackPrice.Size),
+                new PriceSnapshot(r.LayPrice.Price, r.LayPrice.Size))).ToArray());
+        
+        _documentSession.Events.Append(_streamId, @event);
+        await _documentSession.SaveChangesAsync();
 
-        //RaiseEvent(@event);
-        //return ConfirmEvents();
-
-        return Task.CompletedTask;
+        _state = Market.When(_state.ToMarket(), @event).ToState();
     }
 
     public Task SuspendMarket(SuspendMarketCommand command)
@@ -109,6 +115,7 @@ public static class MarketExtensions
         => new MarketState
         {
             Id = market.Id,
+            EventName = market.EventName,
             Name = market.Name,
             StartTime = market.StartTime,
             EndTime = market.EndTime,
@@ -130,6 +137,7 @@ public static class MarketStateExtensions
         => new Market
         {
             Id = market.Id,
+            EventName = market.EventName,
             Name = market.Name,
             StartTime = market.StartTime,
             EndTime = market.EndTime,

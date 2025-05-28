@@ -1,16 +1,16 @@
-﻿POST http://localhost:5163/api/markets
+﻿### Create Market
+
+POST http://localhost:5163/api/markets
 Content-Type: application/json
 
 {
-  "Name":  "Test-toto",
+  "EventName": "Match PSG vs OM",
+  "Name":  "Issue du match",
   "StartTime": "2025-05-27T18:00:00+02:00"
 }
 
-### GET request to example server
-GET http://localhost:5163/api/markets
-
-### GET request to example server
-GET http://localhost:5163/api/markets/47329bcc-305b-443b-aa70-e13a140d74ae
+### GET Market details
+GET http://localhost:5163/api/markets/d8480325-f625-46a0-a960-99891e0bfd38
 
 ### Post change market name
 
@@ -19,4 +19,48 @@ Content-Type: application/json
 
 {
   "Name":  "Un nom encore plus pourri"
+}
+
+### Add runners to market
+
+POST http://localhost:5163/api/markets/d8480325-f625-46a0-a960-99891e0bfd38/runners
+Content-Type: application/json
+
+{
+  "MarketId": "d8480325-f625-46a0-a960-99891e0bfd38",
+  "Runners": [
+    {
+      "Name": "Victoire PSG",
+      "BackPrice": {
+        "Price": "1.5",
+        "Size": "100"
+      },
+      "LayPrice": {
+        "Price": "8.5",
+        "Size": "100"
+      }
+    },
+    {
+      "Name": "Match nul",
+      "BackPrice": {
+        "Price": "3.0",
+        "Size": "100"
+      },
+      "LayPrice": {
+        "Price": "3.5",
+        "Size": "100"
+      }
+    },
+    {
+      "Name": "Victoire OM",
+      "BackPrice": {
+        "Price": "10.0",
+        "Size": "100"
+      },
+      "LayPrice": {
+        "Price": "1.4",
+        "Size": "100"
+      }
+    }
+  ]
 }

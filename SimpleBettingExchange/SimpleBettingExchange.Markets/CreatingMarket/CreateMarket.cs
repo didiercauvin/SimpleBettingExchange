@@ -1,6 +1,5 @@
 using Marten;
 using Wolverine.Http;
-using static SimpleBettingExchange.Markets.MarketServices;
 
 namespace SimpleBettingExchange.Markets;
 
@@ -9,7 +8,7 @@ public record CreateMarketLineRequest(string Name);
 
 public record MarketCreationResponse(Guid Id) : CreationResponse("/api/markets/" + Id);
 
-public record CreateMarketCommand(string Name, DateTimeOffset StartTime);
+public record CreateMarketCommand(string EventName, string Name, DateTimeOffset StartTime);
 
 public static class CreateMarketEndPoint
 {
@@ -25,5 +24,11 @@ public static class CreateMarketEndPoint
             new MarketCreationResponse(created.Id),
             created
         );
+    }
+
+    private static MarketCreated Handle(Guid id, CreateMarketCommand createMarket)
+    {
+        var (eventName, name, lines) = createMarket;
+        return new MarketCreated(id, eventName, name, createMarket.StartTime, DateTimeOffset.Now);
     }
 }

@@ -1,14 +1,23 @@
 ﻿namespace SimpleBettingExchange.Markets;
 
 [GenerateSerializer]
-public record MarketStateCreated(Guid Id, string Name, DateTimeOffset StartTime, DateTimeOffset CreatedAt);
+public record MarketStateCreated(Guid Id, string EventName, string Name, DateTimeOffset StartTime, DateTimeOffset CreatedAt);
 
 [GenerateSerializer]
 public record MarketStateNameChanged(Guid Id, string Name);
 
-public record MarketCreated(Guid Id, string Name, DateTimeOffset StartTime, DateTimeOffset CreatedAt) : IEvent;
+[GenerateSerializer]
+public record MarketStateRunnersAdded(Guid MarketId, RunnerStateSnapshot[] Runners) : IEvent;
+[GenerateSerializer]
+public record RunnerStateSnapshot(Guid RunnerId, string Name, PriceStateSnapshot BackPrice, PriceStateSnapshot LayPrice);
+[GenerateSerializer]
+public record PriceStateSnapshot(decimal Price, decimal Size);
+
+public record MarketCreated(Guid Id, string EventName, string Name, DateTimeOffset StartTime, DateTimeOffset CreatedAt) : IEvent;
 public record MarketNameChanged(Guid Id, string Name) : IEvent;
-public record MarketRunnersAdded(Guid MarketId, Runner[] Runners) : IEvent;
+public record MarketRunnersAdded(Guid MarketId, RunnerSnapshot[] Runners) : IEvent;
+public record RunnerSnapshot(Guid RunnerId, string Name, PriceSnapshot BackPrice, PriceSnapshot LayPrice);
+public record PriceSnapshot(decimal Price, decimal Size);
 public record MarketSuspended(Guid MarketId, DateTimeOffset Date) : IEvent;
 public record MarketResumed(Guid MarketId, DateTimeOffset Date) : IEvent;
 public record MarketClosed(Guid MarkerId, DateTimeOffset Date) : IEvent;
@@ -18,6 +27,7 @@ public enum MarketStatus { Created, Opened, Suspended, Closed }
 public class Market
 {
     public Guid Id { get; set; }
+    public string EventName { get; set; }
 
     public string Name { get; set; }
 
@@ -37,6 +47,7 @@ public class Market
         {
             MarketCreated created => state.Apply(created),
             MarketNameChanged nameChanged => state.Apply(nameChanged),
+            MarketRunnersAdded runnersAdded => state.Apply(runnersAdded),
             _ => throw new ArgumentException("Unknown type of event", nameof(@event))
             // case MarketNameChanged nameChanged: Apply(nameChanged); break;
             // case MarketRunnersAdded runnersAdded: Apply(runnersAdded); break;
@@ -49,6 +60,7 @@ public class Market
     private Market Apply(MarketCreated created)
     {
         Id = created.Id;
+        EventName = created.EventName;
         Name = created.Name;
         Status = MarketStatus.Created;
         StartTime = created.StartTime;
@@ -63,23 +75,25 @@ public class Market
         return this;
     }
 
-    // private static Market Apply(MarketCreated created)
-    // {
-    //     return new Market()
-    //     {
-    //         Id = created.Id,
-    //         Name = created.Name,
-    //         Status = MarketStatus.Created,
-    //         StartTime = created.StartTime,
-    //     };
-    // }
-    //
-    // public void Apply(MarketRunnersAdded runnersAdded)
-    // {
-    //     // var currentRunners = Lines.ToList();
-    //     // currentRunners.AddRange(runnersAdded.Runners.Select(r => new RunnerState(r.Id, r.Name, r.BackPrices, r.LayPrices)));
-    //     // Lines = currentRunners.ToArray();
-    // }
+    private Market Apply(MarketRunnersAdded runnersAdded)
+    {
+        var currentRunners = Lines.ToList();
+        
+        currentRunners.AddRange(
+            runnersAdded.Runners.Select(r => 
+                new Runner(
+                    r.RunnerId, 
+                    r.Name, 
+                    [new Price(r.BackPrice.Price, r.BackPrice.Size)], 
+                    [new Price(r.LayPrice.Price, r.LayPrice.Size)]
+                )
+            )
+        );
+        
+        Lines = currentRunners.ToArray();
+
+        return this;
+    }
     //
     // public void Apply(MarketSuspended suspended)
     // {

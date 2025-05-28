@@ -6,14 +6,16 @@ public class MarketState
     [Id(0)]
     public Guid Id { get; set; }
     [Id(1)]
-    public string Name { get; set; }
+    public string EventName { get; set; }
     [Id(2)]
-    public MarketStatus Status { get; set; }
+    public string Name { get; set; }
     [Id(3)]
-    public DateTimeOffset StartTime { get; set; }
+    public MarketStatus Status { get; set; }
     [Id(4)]
-    public DateTimeOffset? EndTime { get; set; }
+    public DateTimeOffset StartTime { get; set; }
     [Id(5)]
+    public DateTimeOffset? EndTime { get; set; }
+    [Id(6)]
     public RunnerState[] Lines { get; set; } = [];
 }
 
