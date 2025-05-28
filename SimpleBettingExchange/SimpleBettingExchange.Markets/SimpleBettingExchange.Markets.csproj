@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\SimpleBettingEchange.Core\SimpleBettingEchange.Core.csproj" />
+      <ProjectReference Include="..\SimpleBettingEchange.Markets.Contracts\SimpleBettingEchange.Markets.Contracts.csproj" />
     </ItemGroup>
 
     <ItemGroup>

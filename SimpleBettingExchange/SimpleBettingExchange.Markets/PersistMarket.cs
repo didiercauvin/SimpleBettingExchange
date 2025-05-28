@@ -1,4 +1,6 @@
-﻿namespace SimpleBettingExchange.Markets;
+﻿using SimpleBettingEchange.Core;
+
+namespace SimpleBettingExchange.Markets;
 
 public interface IPersistMarket
 {

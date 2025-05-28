@@ -2,6 +2,7 @@
 using Marten;
 using Microsoft.Extensions.Logging;
 using Orleans.EventSourcing;
+using SimpleBettingEchange.Core;
 
 namespace SimpleBettingExchange.Markets;
 
@@ -10,11 +11,16 @@ public interface IMarketGrain : IGrainWithGuidKey
     Task Handle(MarketStateCreated @event);
     Task Handle(MarketStateNameChanged @event);
     Task Handle(MarketStateRunnersAdded @event);
-    Task SuspendMarket(SuspendMarketCommand command);
-    Task ResumeMarket(ResumeMarketCommand command);
-    Task CloseMarket(CloseMarketCommand command);
+    Task<BetStatePlacementResult> PlaceBackBet(Guid traderId, Guid selectionId, decimal odds, decimal stake);
+    Task<BetStatePlacementResult> PlaceLayBet(Guid traderId, Guid selectionId, decimal odds, decimal stake);
+    // Task SuspendMarket(SuspendMarketCommand command);
+    // Task ResumeMarket(ResumeMarketCommand command);
+    // Task CloseMarket(CloseMarketCommand command);
     Task<MarketState> GetMarketState();
 }
+
+[GenerateSerializer]
+public record BetStatePlacementResult(bool IsAccepted, string? Reason = null);
 
 public class MarketGrain : Grain<MarketState>, IMarketGrain
 {
@@ -73,34 +79,14 @@ public class MarketGrain : Grain<MarketState>, IMarketGrain
         _state = Market.When(_state.ToMarket(), @event).ToState();
     }
 
-    public Task SuspendMarket(SuspendMarketCommand command)
+    public Task<BetStatePlacementResult> PlaceBackBet(Guid traderId, Guid selectionId, decimal odds, decimal stake)
     {
-        //var @event = MarketServices.Handle(command);
-
-        //RaiseEvent(@event);
-        //return ConfirmEvents();
-
-        return Task.CompletedTask;
+        throw new NotImplementedException();
     }
 
-    public Task ResumeMarket(ResumeMarketCommand command)
+    public Task<BetStatePlacementResult> PlaceLayBet(Guid traderId, Guid selectionId, decimal odds, decimal stake)
     {
-        //var @event = MarketServices.Handle(command);
-
-        //RaiseEvent(@event);
-        //return ConfirmEvents();
-
-        return Task.CompletedTask;
-    }
-
-    public Task CloseMarket(CloseMarketCommand command)
-    {
-        //var @event = MarketServices.Handle(command);
-
-        //RaiseEvent(@event);
-        //return ConfirmEvents();
-
-        return Task.CompletedTask;
+        throw new NotImplementedException();
     }
 
     public Task<MarketState> GetMarketState()
@@ -153,3 +139,45 @@ public static class MarketStateExtensions
         };
 }
 
+[GenerateSerializer]
+public record MarketStateCreated(Guid Id, string EventName, string Name, DateTimeOffset StartTime, DateTimeOffset CreatedAt);
+[GenerateSerializer]
+public record MarketStateNameChanged(Guid Id, string Name);
+[GenerateSerializer]
+public record MarketStateRunnersAdded(Guid MarketId, RunnerStateSnapshot[] Runners) : IEvent;
+[GenerateSerializer]
+public record RunnerStateSnapshot(Guid RunnerId, string Name, PriceStateSnapshot BackPrice, PriceStateSnapshot LayPrice);
+[GenerateSerializer]
+public record PriceStateSnapshot(decimal Price, decimal Size);
+
+[GenerateSerializer]
+public class MarketState
+{
+    [Id(0)]
+    public Guid Id { get; set; }
+    [Id(1)]
+    public string EventName { get; set; }
+    [Id(2)]
+    public string Name { get; set; }
+    [Id(3)]
+    public MarketStatus Status { get; set; }
+    [Id(4)]
+    public DateTimeOffset StartTime { get; set; }
+    [Id(5)]
+    public DateTimeOffset? EndTime { get; set; }
+    [Id(6)]
+    public RunnerState[] Lines { get; set; } = [];
+}
+
+[GenerateSerializer]
+public class RunnerState(Guid id, string name, PriceState[] backPrices, PriceState[] layPrices)
+{
+    [Id(0)] public Guid Id { get; } = id;
+    [Id(1)] public string Name { get; } = name;
+
+    [Id(2)] public PriceState[] BackPrices { get;  } = backPrices;
+    [Id(3)] public PriceState[] LayPrices { get; set; } = layPrices;
+}
+
+[GenerateSerializer]
+public record PriceState(decimal PriceValue, decimal Size);

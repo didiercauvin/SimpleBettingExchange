@@ -1,4 +1,4 @@
-﻿namespace SimpleBettingExchange.Markets;
+﻿namespace SimpleBettingEchange.Core;
 
 public interface IEvent
 {

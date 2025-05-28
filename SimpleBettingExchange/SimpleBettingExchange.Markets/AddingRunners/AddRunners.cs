@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Wolverine.Http;
-using static SimpleBettingExchange.Markets.MarketServices;
 
 namespace SimpleBettingExchange.Markets;
 

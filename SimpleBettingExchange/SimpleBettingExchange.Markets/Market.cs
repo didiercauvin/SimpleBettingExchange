@@ -1,23 +1,21 @@
-﻿namespace SimpleBettingExchange.Markets;
+﻿using SimpleBettingEchange.Core;
 
-[GenerateSerializer]
-public record MarketStateCreated(Guid Id, string EventName, string Name, DateTimeOffset StartTime, DateTimeOffset CreatedAt);
-
-[GenerateSerializer]
-public record MarketStateNameChanged(Guid Id, string Name);
-
-[GenerateSerializer]
-public record MarketStateRunnersAdded(Guid MarketId, RunnerStateSnapshot[] Runners) : IEvent;
-[GenerateSerializer]
-public record RunnerStateSnapshot(Guid RunnerId, string Name, PriceStateSnapshot BackPrice, PriceStateSnapshot LayPrice);
-[GenerateSerializer]
-public record PriceStateSnapshot(decimal Price, decimal Size);
+namespace SimpleBettingExchange.Markets;
 
 public record MarketCreated(Guid Id, string EventName, string Name, DateTimeOffset StartTime, DateTimeOffset CreatedAt) : IEvent;
 public record MarketNameChanged(Guid Id, string Name) : IEvent;
 public record MarketRunnersAdded(Guid MarketId, RunnerSnapshot[] Runners) : IEvent;
 public record RunnerSnapshot(Guid RunnerId, string Name, PriceSnapshot BackPrice, PriceSnapshot LayPrice);
 public record PriceSnapshot(decimal Price, decimal Size);
+
+public interface IBackBetEvent : IEvent
+{
+    
+}
+public record BackBetPlaced() : IBackBetEvent;
+public record BackBetRejected() : IBackBetEvent;
+
+
 public record MarketSuspended(Guid MarketId, DateTimeOffset Date) : IEvent;
 public record MarketResumed(Guid MarketId, DateTimeOffset Date) : IEvent;
 public record MarketClosed(Guid MarkerId, DateTimeOffset Date) : IEvent;

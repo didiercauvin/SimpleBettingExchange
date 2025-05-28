@@ -14,6 +14,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\SimpleBettingExchange.Markets\SimpleBettingExchange.Markets.csproj" />
+      <ProjectReference Include="..\SimpleBettingExchange.Trading\SimpleBettingExchange.Trading.csproj" />
     </ItemGroup>
 
 </Project>
